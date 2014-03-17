@@ -45,7 +45,7 @@
                 <directory>/src/</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*.yml</include>
+                    <include>/src/main/resources*.yml</include>
                     <include>*.dat</include>
                 </includes>
 		</resource>
