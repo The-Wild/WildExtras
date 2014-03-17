@@ -44,7 +44,7 @@
                 <targetPath>.</targetPath>
                 <directory>/src/</directory>
                 <includes>
-                    <include>/src/main/resources/plugin.yml</include>
+                    <include>/src/resources/plugin.yml</include>
                 </includes>
 		</resource>
     </resources>
