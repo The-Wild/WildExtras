@@ -43,10 +43,8 @@
         <resource>
                 <targetPath>.</targetPath>
                 <directory>/src/</directory>
-                <filtering>true</filtering>
                 <includes>
-                    <include>/src/main/resources*.yml</include>
-                    <include>*.dat</include>
+                    <include>/src/main/resources/plugin.yml</include>
                 </includes>
 		</resource>
     </resources>
