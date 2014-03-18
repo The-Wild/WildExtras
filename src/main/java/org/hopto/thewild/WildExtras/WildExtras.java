@@ -1,4 +1,4 @@
-package org.hopto.thewild.WildExtras;
+package main.java.org.hopto.thewild.WildExtras;
 
 import org.bukkit.World;
 import org.bukkit.command.Command;
