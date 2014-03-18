@@ -1,5 +1,5 @@
 package org.hopto.thewild.WildExtras;
-//git hub push 7
+
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
