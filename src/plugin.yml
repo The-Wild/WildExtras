@@ -1,5 +1,5 @@
 name: WildExtras
-main: org.hopto.thewild.WildExtras
+main: org.hopto.thewild.WildExtras.WildExtras
 version: 0.2
 commands:
    arrowclear:
