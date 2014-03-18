@@ -42,7 +42,7 @@
     <resources>
         <resource>
                 <targetPath>.</targetPath>
-                <directory>/src/</directory>
+                <directory>/src/main/resources</directory>
                 <includes>
                     <include>plugin.yml</include>
                 </includes>
