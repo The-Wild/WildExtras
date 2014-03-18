@@ -41,8 +41,8 @@
   <build>
     <resources>
         <resource>
-                <targetPath>/src</targetPath>
-                <directory>/src/main/resources</directory>
+                <targetPath>.</targetPath>
+                <directory>/src</directory>
                 <includes>
                     <include>plugin.yml</include>
                 </includes>
