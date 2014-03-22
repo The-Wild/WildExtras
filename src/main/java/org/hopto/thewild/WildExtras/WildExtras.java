@@ -7,8 +7,8 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -68,7 +68,7 @@ public final class WildExtras extends JavaPlugin implements Listener {
 		}
 		    
 		    @EventHandler
-		    public void onBlockPlace(BlockPlaceEvent e){ // block break event
+		    public void onHangingPlace(HangingPlaceEvent e){ // block break event - or is it?
 			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
 		            e.setCancelled(true);
 		            }
@@ -82,7 +82,7 @@ public final class WildExtras extends JavaPlugin implements Listener {
 		    }
 		    
 		    @EventHandler
-		    public void onHangingBreakByEntity(HangingBreakByEntityEvent ev){ // block break event
+		    public void onHangingBreakByEntity(HangingBreakByEntityEvent ev){ // block break event - or is it?
 			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world")){
 		            ev.setCancelled(true);
 		            }
