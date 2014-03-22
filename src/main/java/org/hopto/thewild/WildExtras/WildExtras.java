@@ -7,6 +7,8 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -62,8 +64,37 @@ public final class WildExtras extends JavaPlugin implements Listener {
 	            }
 		    if	(event.getBlock().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
 	            event.setCancelled(true);
-	            }
-
-		    
+	            }  
 		}
+		    
+		    @EventHandler
+		    public void onBlockPlace(BlockPlaceEvent e){ // block break event
+			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
+		            e.setCancelled(true);
+		            }
+			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world_nether")){
+		            e.setCancelled(true);
+		            }
+			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
+		            e.setCancelled(true);
+		            }           
+
+		    }
+		    
+		    @EventHandler
+		    public void onHangingBreakByEntity(HangingBreakByEntityEvent ev){ // block break event
+			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world")){
+		            ev.setCancelled(true);
+		            }
+			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world_nether")){
+		            ev.setCancelled(true);
+		            }
+			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
+		            ev.setCancelled(true);
+		            }           
+
+		    }
+		    
+		    
+		    
 }
