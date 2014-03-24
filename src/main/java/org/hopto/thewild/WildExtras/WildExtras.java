@@ -1,10 +1,12 @@
 package org.hopto.thewild.WildExtras;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -57,6 +59,12 @@ public final class WildExtras extends JavaPlugin implements Listener {
 //Dispenser blocking for old worlds
 		    @EventHandler
 		    public void onDispense(BlockDispenseEvent event){
+		    if	(event.getItem().getType() == Material.WATER_BUCKET){
+		            event.setCancelled(true);
+		            }     
+			if	(event.getItem().getType() == Material.LAVA_BUCKET){
+		            event.setCancelled(true);
+		            }    
 		    if	(event.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
 	            event.setCancelled(true);
 	            }
@@ -68,7 +76,8 @@ public final class WildExtras extends JavaPlugin implements Listener {
 	            }  
 		}
 		    
-		    @EventHandler
+
+			@EventHandler
 		    public void onHangingPlace(HangingPlaceEvent e){ // block break event - or is it?
 			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
 		            e.setCancelled(true);
@@ -79,12 +88,6 @@ public final class WildExtras extends JavaPlugin implements Listener {
 			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
 		            e.setCancelled(true);
 		            }        
-			    if	(e.getBlock().getType() == Material.WATER){
-		            e.setCancelled(true);
-		            }     
-			    if	(e.getBlock().getType() == Material.LAVA){
-		            e.setCancelled(true);
-		            }    
 
 		    }
 		    
