@@ -1,5 +1,6 @@
 package org.hopto.thewild.WildExtras;
 
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -77,7 +78,13 @@ public final class WildExtras extends JavaPlugin implements Listener {
 		            }
 			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
 		            e.setCancelled(true);
-		            }           
+		            }        
+			    if	(e.getBlock().getType() == Material.WATER){
+		            e.setCancelled(true);
+		            }     
+			    if	(e.getBlock().getType() == Material.LAVA){
+		            e.setCancelled(true);
+		            }    
 
 		    }
 		    
