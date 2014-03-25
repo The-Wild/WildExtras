@@ -1,21 +1,24 @@
 package org.hopto.thewild.WildExtras;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.HorseInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-
+//todo - restructure classes
 
 public final class WildExtras extends JavaPlugin implements Listener {
 	
@@ -76,7 +79,7 @@ public final class WildExtras extends JavaPlugin implements Listener {
 	            }  
 		}
 		    
-
+		    //Stop painting placing
 			@EventHandler
 		    public void onHangingPlace(HangingPlaceEvent e){ // block break event - or is it?
 			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
@@ -91,6 +94,7 @@ public final class WildExtras extends JavaPlugin implements Listener {
 
 		    }
 		    
+			//Stop item frame theft
 		    @EventHandler
 		    public void onHangingBreakByEntity(HangingBreakByEntityEvent ev){ // block break event - or is it?
 			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world")){
@@ -105,6 +109,26 @@ public final class WildExtras extends JavaPlugin implements Listener {
 
 		    }
 		    
+		    //Stop horse inventory theft
+		    @EventHandler
+		    public void onInventoryClick(InventoryClickEvent event) {
+		    	HumanEntity human =  event.getView().getPlayer();
+			    if(human instanceof Player)
+			    {
+			        Player player = (Player)human;
+			        if (player.getWorld().getName().contains("world")) {
+				      Inventory inv = event.getInventory();
+			            if (inv instanceof HorseInventory) {
+				                          event.setCancelled(true);
+				                          player.updateInventory();
+			            }
+			        }
+			    }
+		    }
+		      
+
+		             
 		    
+
 		    
 }
