@@ -116,7 +116,7 @@ public final class WildExtras extends JavaPlugin implements Listener {
 			    if(human instanceof Player)
 			    {
 			        Player player = (Player)human;
-			        if (player.getWorld().getName().contains("world")) {
+			        if (player.getWorld().getName().contains("old")) {
 				      Inventory inv = event.getInventory();
 			            if (inv instanceof HorseInventory) {
 				                          event.setCancelled(true);
