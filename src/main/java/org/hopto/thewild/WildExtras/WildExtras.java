@@ -62,12 +62,6 @@ public final class WildExtras extends JavaPlugin implements Listener {
 //Dispenser blocking for old worlds
 		    @EventHandler
 		    public void onDispense(BlockDispenseEvent event){
-		    if	(event.getItem().getType() == Material.WATER_BUCKET){
-		            event.setCancelled(true);
-		            }     
-			if	(event.getItem().getType() == Material.LAVA_BUCKET){
-		            event.setCancelled(true);
-		            }    
 		    if	(event.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
 	            event.setCancelled(true);
 	            }
@@ -109,7 +103,7 @@ public final class WildExtras extends JavaPlugin implements Listener {
 
 		    }
 		    
-		    //Stop horse inventory theft
+		    //Stop horse inventory theft - old world
 		    @EventHandler
 		    public void onInventoryClick(InventoryClickEvent event) {
 		    	HumanEntity human =  event.getView().getPlayer();
