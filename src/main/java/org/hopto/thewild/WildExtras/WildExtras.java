@@ -1,29 +1,19 @@
 package org.hopto.thewild.WildExtras;
 
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.HorseInventory;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 //todo - restructure classes
 
-public final class WildExtras extends JavaPlugin implements Listener {
+public final class WildExtras extends JavaPlugin {
 	
 	public void onEnable(){
-		getServer().getPluginManager().registerEvents(this, this);
+		getServer().getPluginManager().registerEvents(new WEListeners(), this);
 		getLogger().info("WildExtras Started");
 	}
 	public void onDisable(){
@@ -31,97 +21,33 @@ public final class WildExtras extends JavaPlugin implements Listener {
 	}
 	
 	
-//Arrow Clear Command
-		public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-	    if(cmd.getName().equalsIgnoreCase("arrowclear")){
-	    	if(sender.hasPermission("wildextras.arrowclear")) {
-	    		   //Do something
-	    		
-			for(World w : getServer().getWorlds()) {
-			    // Do something
-			
-				for (Arrow arrow : w.getEntitiesByClass(Arrow.class)) {
-					//would be nice to check if its moving but i cant seem to do it right now					
-						arrow.remove();
-				}
-
+	
+	//Arrow Clear Command
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
+    if(cmd.getName().equalsIgnoreCase("arrowclear")){
+    	if(sender.hasPermission("wildextras.arrowclear")) {
+    		   //Do something
+    		
+		for(World w : getServer().getWorlds()) {
+		    // Do something
+		
+			for (Arrow arrow : w.getEntitiesByClass(Arrow.class)) {
+				//would be nice to check if its moving but i cant seem to do it right now					
+					arrow.remove();
 			}
 
-    		}else{
-	    		   //Do something else - no perms
-	    		}
-			
-			return true;
-		} //If this has happened the function will return true. 
-	        // If this hasn't happened the a value of false will be returned.
-		return false; 
-	}
-	
-	
-	
-//Dispenser blocking for old worlds
-		    @EventHandler
-		    public void onDispense(BlockDispenseEvent event){
-		    if	(event.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
-	            event.setCancelled(true);
-	            }
-		    if	(event.getBlock().getWorld().getName().equalsIgnoreCase("old_world_nether")){
-	            event.setCancelled(true);
-	            }
-		    if	(event.getBlock().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
-	            event.setCancelled(true);
-	            }  
 		}
-		    
-		    //Stop painting placing
-			@EventHandler
-		    public void onHangingPlace(HangingPlaceEvent e){ // block break event - or is it?
-			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world")){
-		            e.setCancelled(true);
-		            }
-			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world_nether")){
-		            e.setCancelled(true);
-		            }
-			    if	(e.getBlock().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
-		            e.setCancelled(true);
-		            }        
 
-		    }
-		    
-			//Stop item frame theft
-		    @EventHandler
-		    public void onHangingBreakByEntity(HangingBreakByEntityEvent ev){ // block break event - or is it?
-			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world")){
-		            ev.setCancelled(true);
-		            }
-			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world_nether")){
-		            ev.setCancelled(true);
-		            }
-			    if	(ev.getEntity().getWorld().getName().equalsIgnoreCase("old_world_the_end")){
-		            ev.setCancelled(true);
-		            }           
-
-		    }
-		    
-		    //Stop horse inventory theft - old world
-		    @EventHandler
-		    public void onInventoryClick(InventoryClickEvent event) {
-		    	HumanEntity human =  event.getView().getPlayer();
-			    if(human instanceof Player)
-			    {
-			        Player player = (Player)human;
-			        if (player.getWorld().getName().contains("old")) {
-				      Inventory inv = event.getInventory();
-			            if (inv instanceof HorseInventory) {
-				                          event.setCancelled(true);
-				                          player.updateInventory();
-			            }
-			        }
-			    }
-		    }
-		      
-
-		             
+		}else{
+    		   //Do something else - no perms
+    		}
+		
+		return true;
+	} //If this has happened the function will return true. 
+        // If this hasn't happened the a value of false will be returned.
+	return false; 
+}
+	     
 		    
 
 		    
