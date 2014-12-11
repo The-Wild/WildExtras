@@ -7,11 +7,20 @@ commands:
       usage: /arrowclear
       permission: wildextras.arrowclear
       permission-message: You can't do that!
+   spyon:
+      description: Lets Mods Spy!
+      usage: /spyon <player>
+      permission: wildextras.spy
+      permission-message: You can't do that!
 permissions:
     wildextras.*:
         description: Gives access to all wildextras commands
         children:
             wildextras.arrowclear: true
+            wildextras.spy: true
     wildextras.arrowclear:
         description: Clears all arrows in the world
+        default: op
+    wildextras.spy:
+        description: Spy on people!
         default: op

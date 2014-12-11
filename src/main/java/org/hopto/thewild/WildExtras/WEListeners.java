@@ -1,5 +1,7 @@
 package org.hopto.thewild.WildExtras;
 
+import java.io.File;
+
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,6 +10,7 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 
@@ -56,5 +59,17 @@ public class WEListeners implements Listener {
 	        }
 	    }
     }
+    //create a file for each user so that wildbot knows who to trust!
+    @EventHandler
+    public void onLogin(PlayerJoinEvent event) {
+             String playername = event.getPlayer().getName();
+             File playerfile = new File("plugins/WildExtras/"+playername);
+             if (!playerfile.exists()) {
+             playerfile.createNewFile();
+             }
+     
+          }
+    
+    
 
 }
