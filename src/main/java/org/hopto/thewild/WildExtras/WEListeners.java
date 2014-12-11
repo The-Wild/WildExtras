@@ -1,6 +1,7 @@
 package org.hopto.thewild.WildExtras;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -65,9 +66,12 @@ public class WEListeners implements Listener {
              String playername = event.getPlayer().getName();
              File playerfile = new File("plugins/WildExtras/"+playername);
              if (!playerfile.exists()) {
-             playerfile.createNewFile();
-             }
-     
+            	 try {
+                     playerfile.createNewFile();
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+             }     
           }
     
     
