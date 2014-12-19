@@ -3,6 +3,7 @@ package org.hopto.thewild.WildExtras;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 
@@ -32,6 +34,18 @@ public class WEListeners implements Listener {
             e.setCancelled(true);
             }     
 
+    }
+	@EventHandler
+    public void noPickup(PlayerPickupItemEvent e){
+		Player player = e.getPlayer();
+		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
+		File f = new File(userdata, File.separator + player + "-visit.yml");
+		if(!f.exists()){
+        if (e.isCancelled()) {
+            return;
+        }       
+        e.setCancelled(true);
+		}
     }
     
 	//Stop item frame theft
