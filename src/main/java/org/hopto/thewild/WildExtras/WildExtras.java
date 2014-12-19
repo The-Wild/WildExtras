@@ -150,10 +150,10 @@ public final class WildExtras extends JavaPlugin {
 				if (targetPlayer == null) {
 					player.sendMessage("Player Not Found");
 					return true;
-			/*	}
+				}
 					else if (targetPlayer == player) {
 						player.sendMessage("Dummy!");
-					return true; */
+					return true; 
 				}   else if(f.exists()){
 					player.sendMessage("You are already visiting - use /endvisit");		
 					return true;
