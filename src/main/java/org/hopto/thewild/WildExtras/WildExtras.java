@@ -158,7 +158,7 @@ public final class WildExtras extends JavaPlugin {
 					player.sendMessage("You are already visiting - use /endvisit");		
 					return true;
 				}
-				VisitMap.put(pname, targetName);
+				VisitMap.put(targetName, pname);
 				targetPlayer.sendMessage("Moderator [" + pname + "] would like to visit you. Type /va to accept.");
 				player.sendMessage("Sent request to " + targetName);
 				return true;
