@@ -40,7 +40,7 @@ public class WEListeners implements Listener {
 		Player player = e.getPlayer();
 		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
 		File f = new File(userdata, File.separator + player + "-visit.yml");
-		if(!f.exists()){
+		if(f.exists()){
         if (e.isCancelled()) {
             return;
         }       
