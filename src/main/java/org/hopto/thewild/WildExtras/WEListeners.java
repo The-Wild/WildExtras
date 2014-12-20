@@ -39,7 +39,7 @@ public class WEListeners implements Listener {
     public void noPickup(PlayerPickupItemEvent e){
 		Player player = e.getPlayer();
 		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-		File f = new File(userdata, File.separator + player + "-visit.yml");
+		File f = new File(userdata, File.separator + player.getDisplayName().toString() + "-visit.yml");
 		if(f.exists()){
         if (e.isCancelled()) {
             return;
