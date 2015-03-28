@@ -1,7 +1,18 @@
 name: WildExtras
 main: org.hopto.thewild.WildExtras.WildExtras
 version: 0.2
+depends: [Essentials, dynmap]
 commands:
+   pvpon:
+      description: Removes for 1hour count reset!
+      usage: /pvpon
+      permission: wildextras.pvpon
+      permission-message: You can't do that!
+   clearpvpcount:
+      description: Removes for 1hour count reset!
+      usage: /clearpvpcount
+      permission: wildextras.clearpvpcount
+      permission-message: You can't do that!
    arrowclear:
       description: Removes all arrows, from all worlds!
       usage: /arrowclear
@@ -20,15 +31,23 @@ commands:
       usage: /endvisit
       permission: wildextras.visit
       permission-message: You can't do that!
+   makevisitinv:
+      description: Mod only
+      usage: /makevisitinv 
+      permission: wildextras.makevisitinv
+      permission-message: You can't do that!
 permissions:
     wildextras.*:
         description: Gives access to all wildextras commands
         children:
             wildextras.arrowclear: true
-            wildextras.spy: true
+            wildextras.visit: true
     wildextras.arrowclear:
         description: Clears all arrows in the world
         default: op
-    wildextras.spy:
-        description: Spy on people!
+    wildextras.visit:
+        description: See!
+        default: op
+    wildextras.makevisitinv:
+        description: Create the visit inventory
         default: op
