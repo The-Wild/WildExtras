@@ -204,8 +204,8 @@ public final class WildExtras extends JavaPlugin {
 				File protecteduserdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "ProtectedUserData");
 				org.hopto.thewild.WildExtras.WEListeners.deathmap.clear();
 				for(File file: protecteduserdata.listFiles()) file.delete();
-				Bukkit.getServer().broadcastMessage("Cleared stuff");
-        }
+				return true;
+        } return false;
 		} else if(cmd.getName().equalsIgnoreCase("pvpon")){
 			if(sender.hasPermission("wildextras.pvpon")) {
 		 		   //got perms
@@ -216,11 +216,13 @@ public final class WildExtras extends JavaPlugin {
 				if (f.exists()){
 				f.delete();
 				org.hopto.thewild.WildExtras.WEListeners.deathmap.remove(pname);
-				Bukkit.getServer().broadcastMessage("Cleared stuff");
+				sender.sendMessage("You are no longer PvP Protected");
+				return true;
 				} else {
 					sender.sendMessage("You are not PvP Protected");
+					return true;
 				}
-        }
+        } return false;
 	} else if(cmd.getName().equalsIgnoreCase("visit")){
 			if(sender.hasPermission("wildextras.visit")) {
 		 		   //got perms

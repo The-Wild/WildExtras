@@ -112,7 +112,7 @@ public class WEListeners implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event){
-          //if(event.getEntity().getKiller() instanceof Player) {
+          if(event.getEntity().getKiller() instanceof Player) {
     		int deathCount;
                   Player victim = event.getEntity();
                   String v = victim.getName().toString();
@@ -131,9 +131,9 @@ public class WEListeners implements Listener {
 		            } catch (IOException e) {
 		                 e.printStackTrace();
 		                    }	
-		    	Bukkit.getServer().broadcastMessage("You are now protected from PvP! Use /pvpon to disable.");
+		    	victim.sendMessage("You are now protected from PvP! Use /pvpon to disable.");
 		 }
-   //  }
+     }
     }
           return;
     }
@@ -142,23 +142,51 @@ public class WEListeners implements Listener {
     
     
     
-    //prevent damage on visits - and on pvp protect because of spam kills
+    //prevent pvp damage on visits - and on pvp protect because of spam kills - also prevent protected person from pvping.
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
     public void onEntityDamage(final EntityDamageEvent event){
     	  if (!(event.getEntity() instanceof Player)) {
     	    return;
     	  }
-    	  final Player player=(Player)event.getEntity();
-    	  Entity killer = ((EntityDamageByEntityEvent)event).getDamager();
-  		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-  		File f = new File(userdata, File.separator + player.getName() + "-visit.yml");
-  		File p = new File(protecteduserdata, File.separator + player.getName() + "-protected.yml");
+      	if (!(event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)event).getDamager() instanceof Player)) {
+      	  final Player player=(Player)event.getEntity();
+      		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
+      		File f = new File(userdata, File.separator + player.getName() + "-visit.yml");
+      	  if (f.exists()) {
+      	    event.setCancelled(true);
+      	    event.setDamage(0);
+      	    return;
+        	}
+      	} else {
+    	  final Player player2=(Player)event.getEntity();
+    	Entity killer = ((EntityDamageByEntityEvent)event).getDamager();
+  		File userdata2 = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
+  		File f2 = new File(userdata2, File.separator + player2.getName() + "-visit.yml");
+  		File p = new File(protecteduserdata, File.separator + player2.getName() + "-protected.yml");
   		File pa = new File(protecteduserdata, File.separator + killer.getName() + "-protected.yml");
-    	  if (f.exists()||p.exists()||pa.exists()) {
+    	  if (f2.exists()) {
     	    event.setCancelled(true);
     	    event.setDamage(0);
+    	    return;
+    	  } else if (p.exists()) {
+        	    event.setCancelled(true);
+        	    event.setDamage(0);
+      		killer.sendMessage("You are PvP protected. Type /pvpon to disable");
+      		return;
+    	  } else if (pa.exists()) {
+      	    event.setCancelled(true);
+      	    event.setDamage(0);
+    		killer.sendMessage("You are PvP protected. Type /pvpon to disable");
+    		return;
     	  }
-    	}
+        	}
+    }
+       	
+    	
+    
+    
+    
+    
     
     
 	//prevent block pickup by moderators visiting. - need to add stop chest / enderchest open. Also need to stop damage.

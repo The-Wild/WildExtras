@@ -4,7 +4,7 @@ version: 0.2
 depends: [Essentials, dynmap]
 commands:
    pvpon:
-      description: Removes for 1hour count reset!
+      description: Removes pvp spam protection!
       usage: /pvpon
       permission: wildextras.pvpon
       permission-message: You can't do that!
