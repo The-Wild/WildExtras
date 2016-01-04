@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
+import nl.lolmewn.stats.api;
 
 public class WEListeners implements Listener {
 //old world config	
@@ -145,9 +146,10 @@ public class WEListeners implements Listener {
     //prevent pvp damage on visits - and on pvp protect because of spam kills - also prevent protected person from pvping.
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
     public void onEntityDamage(final EntityDamageEvent event){
-    	  if (!(event.getEntity() instanceof Player)) {
-    	    return;
-    	  }
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        final Player player = (Player)
       	if (!(event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)event).getDamager() instanceof Player)) {
       	  final Player player=(Player)event.getEntity();
       		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
@@ -158,28 +160,33 @@ public class WEListeners implements Listener {
       	    return;
         	}
       	} else {
-    	  final Player player2=(Player)event.getEntity();
-    	Entity killer = ((EntityDamageByEntityEvent)event).getDamager();
-  		File userdata2 = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-  		File f2 = new File(userdata2, File.separator + player2.getName() + "-visit.yml");
-  		File p = new File(protecteduserdata, File.separator + player2.getName() + "-protected.yml");
-  		File pa = new File(protecteduserdata, File.separator + killer.getName() + "-protected.yml");
-    	  if (f2.exists()) {
-    	    event.setCancelled(true);
-    	    event.setDamage(0);
-    	    return;
-    	  } else if (p.exists()) {
-        	    event.setCancelled(true);
-        	    event.setDamage(0);
-      		killer.sendMessage("You are PvP protected. Type /pvpon to disable");
-      		return;
-    	  } else if (pa.exists()) {
-      	    event.setCancelled(true);
-      	    event.setDamage(0);
-    		killer.sendMessage("You are PvP protected. Type /pvpon to disable");
-    		return;
-    	  }
-        	}
+            final Player player2=(Player)event.getEntity();
+            Entity killer = ((EntityDamageByEntityEvent)event).getDamager();
+            File userdata2 = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
+            File f2 = new File(userdata2, File.separator + player2.getName() + "-visit.yml");
+            File p = new File(protecteduserdata, File.separator + player2.getName() + "-protected.yml");
+            File pa = new File(protecteduserdata, File.separator + killer.getName() + "-protected.yml");
+            if (f2.exists()) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            } else if (p.exists() || pa.exists()) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                killer.sendMessage(player2.getName() + " is PvP protected. Leave them alone!");
+                return;
+            } else if (pa.exists()) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                killer.sendMessage("You are PvP protected. Type /pvpon to disable");
+                return;
+            } else if (is_newbie()) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                killer.sendMessage(player2().getName() + " is a newbie, leave them alone!");
+                return;
+            }
+        }
     }
        	
     	
@@ -216,8 +223,27 @@ public class WEListeners implements Listener {
                      e.printStackTrace();
                  }
              }     
+
+             // And if they're a newbie, colour their name
+             if (is_newbie(playername)) {
+                 event.getPlayer().setPlayerListName("&d" + playername);
+                 event.getPlayer().setPlayerName("&d" + playername);
+             }
           }
     
-    
+    private StatsAPI statsAPI;
+
+    private boolean setupStatsAPI(){
+        RegisteredServiceProvider<StatsAPI> stats = getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
+        if (stats!= null) {
+            statsAPI = stats.getProvider();
+        }
+        return (statsAPI != null);
+    }
+
+    public boolean is_newbie(String playername) {
+        Int playtime_secs = StatsAPI.getPlaytime(playername, "world");
+        return (playtime_secs < 60 * 60);
+    }
 
 }
