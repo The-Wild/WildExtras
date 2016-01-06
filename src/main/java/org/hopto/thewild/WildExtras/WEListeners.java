@@ -212,6 +212,10 @@ public class WEListeners implements Listener {
              if (!playerfile.exists()) {
             	 try {
                      playerfile.createNewFile();
+                     event.getPlayer().sendMessage(
+                             "Welcome!  Please read the welcome guide for "
+                             + "useful info: http://the-wild.tk/welcome"
+                    );
                  } catch (IOException e) {
                      e.printStackTrace();
                  }
