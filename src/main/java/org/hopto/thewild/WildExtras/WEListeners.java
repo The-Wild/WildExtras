@@ -236,22 +236,23 @@ public class WEListeners implements Listener {
     //create a file for each user so that wildbot knows who to trust!
     @EventHandler
     public void onLogin(PlayerJoinEvent event) {
-             String playername = event.getPlayer().getName();
-             File playerfile = new File("plugins/WildExtras/"+playername);
-             if (!playerfile.exists()) {
-            	 try {
-                     playerfile.createNewFile();
-                 } catch (IOException e) {
-                     e.printStackTrace();
-                 }
-             }     
+        Player player = event.getPlayer();
+        String playername = player.getName();
+        File playerfile = new File("plugins/WildExtras/"+playername);
+        if (!playerfile.exists()) {
+            try {
+                playerfile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }     
 
-             // And if they're a newbie, colour their name
-             if (is_newbie(playername)) {
-                 event.getPlayer().setPlayerListName("&d" + playername);
-                 event.getPlayer().setPlayerName("&d" + playername);
-             }
-          }
+        // And if they're a newbie, colour their name
+        if (isNewbie(player)) {
+            player.setPlayerListName("&d" + playername);
+            player.setPlayerName("&d" + playername);
+        }
+    }
     
     private StatsAPI CachedStatsAPI;
 
