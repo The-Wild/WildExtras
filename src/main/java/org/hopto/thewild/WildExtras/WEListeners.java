@@ -219,18 +219,17 @@ public class WEListeners implements Listener {
     
     
     
-	//prevent block pickup by moderators visiting. - need to add stop chest / enderchest open. Also need to stop damage.
-	@EventHandler
+    //prevent block pickup by moderators visiting. - need to add stop chest / enderchest open. Also need to stop damage.
+    @EventHandler
     public void noPickup(PlayerPickupItemEvent e){
-		Player player = e.getPlayer();
-		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-		File f = new File(userdata, File.separator + player.getName() + "-visit.yml");
-		if(f.exists() || player.getName().contains("old")){
-        if (e.isCancelled()) {
-            return;
-        }       
-        e.setCancelled(true);
-		}
+        Player player = e.getPlayer();
+        if (isVisiting(player) || player.getName().contains("old")) {
+            if (e.isCancelled()) {
+                return;
+            } else {
+                e.setCancelled(true);
+            }
+        }
     }	   
     
     
