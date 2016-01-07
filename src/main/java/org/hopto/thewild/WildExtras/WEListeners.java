@@ -174,9 +174,9 @@ public class WEListeners implements Listener {
             attacker.sendMessage(victim.getName() + " is PvP protected. Leave them alone!");
         } else if (isProtected(attacker)) {
             attacker.sendMessage("You are PvP protected. Type /pvpon to disable");
-        } else if (is_newbie(victim)) {
+        } else if (isNewbie(victim)) {
             attacker.sendMessage(victim().getName() + " is a newbie, leave them alone!");
-        } else if (is_newbie(attacker)) {
+        } else if (isNewbie(attacker)) {
             attacker.sendMessage(
                 "You are still PvP protected as a new player, and thus cannot attack others yet"
             );
@@ -206,8 +206,15 @@ public class WEListeners implements Listener {
         return visit_file.exists();
     }
        	
-    	
-    
+    private boolean isNewbie(final Player player) {
+        StatsAPI statsAPI = getStatsAPI();
+        if (statsAPI == null) {
+            // Fail-safe if Stats API wasn't available for whatever reason
+            return false;
+        }
+        Int playtime_secs = statsAPI.getPlaytime(player.getName(), "world");
+        return (playtime_secs < 60 * 60);
+    }
     
     
     
@@ -248,19 +255,19 @@ public class WEListeners implements Listener {
              }
           }
     
-    private StatsAPI statsAPI;
+    private StatsAPI CachedStatsAPI;
 
-    private boolean setupStatsAPI(){
-        RegisteredServiceProvider<StatsAPI> stats = getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
-        if (stats!= null) {
-            statsAPI = stats.getProvider();
+    private StatsAPI getStatsAPI() {
+        if (CachedstatsAPI) {
+            return CachedstatsAPI;
+        } else {
+            RegisteredServiceProvider<StatsAPI> stats = getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
+            if (stats == null) {
+                CachedStatsAPI = stats.getProvider();
+            }
+            return CachedStatsAPI;
         }
-        return (statsAPI != null);
     }
 
-    public boolean is_newbie(String playername) {
-        Int playtime_secs = StatsAPI.getPlaytime(playername, "world");
-        return (playtime_secs < 60 * 60);
-    }
 
 }
