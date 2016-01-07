@@ -155,8 +155,9 @@ public class WEListeners implements Listener {
         Entity attacker = ((EntityDamageByEntityEvent)event).getDamager();
 
         // If the victim is a visiting pmod they should be immune to all damage,
-        // so if that's the case shortcut here.
-        if (isVisiting(player)) {
+        // or if the attacker is a visiting pmod they shouldn't be able to
+        // damage other players, so if either is the case shortcut here
+        if (isVisiting(player) || isVisiting(attacker)) {
             event.setCancelled(true);
             event.setDamage(0);
             return;
