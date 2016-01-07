@@ -98,10 +98,8 @@ public class WEListeners implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
     	Player player = e.getPlayer();
-		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-		File f = new File(userdata, File.separator + player.getName() + "-visit.yml");
-    if(f.exists() || player.getWorld().getName().contains("old")){
-    e.setCancelled(true);
+        if (isVisiting(player) || player.getWorld().getName().contains("old")) {
+            e.setCancelled(true);
         }
     }
     
