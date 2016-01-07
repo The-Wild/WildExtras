@@ -145,48 +145,65 @@ public class WEListeners implements Listener {
     
     //prevent pvp damage on visits - and on pvp protect because of spam kills - also prevent protected person from pvping.
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
-    public void onEntityDamage(final EntityDamageEvent event){
+    public void onEntityDamage(final EntityDamageEvent event) {
+        // If it's not a player being damaged, we don't care.
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
-        final Player player = (Player)
-      	if (!(event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)event).getDamager() instanceof Player)) {
-      	  final Player player=(Player)event.getEntity();
-      		File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-      		File f = new File(userdata, File.separator + player.getName() + "-visit.yml");
-      	  if (f.exists()) {
-      	    event.setCancelled(true);
-      	    event.setDamage(0);
-      	    return;
-        	}
-      	} else {
-            final Player player2=(Player)event.getEntity();
-            Entity killer = ((EntityDamageByEntityEvent)event).getDamager();
-            File userdata2 = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
-            File f2 = new File(userdata2, File.separator + player2.getName() + "-visit.yml");
-            File p = new File(protecteduserdata, File.separator + player2.getName() + "-protected.yml");
-            File pa = new File(protecteduserdata, File.separator + killer.getName() + "-protected.yml");
-            if (f2.exists()) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
-            } else if (p.exists() || pa.exists()) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                killer.sendMessage(player2.getName() + " is PvP protected. Leave them alone!");
-                return;
-            } else if (pa.exists()) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                killer.sendMessage("You are PvP protected. Type /pvpon to disable");
-                return;
-            } else if (is_newbie()) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                killer.sendMessage(player2().getName() + " is a newbie, leave them alone!");
-                return;
-            }
+
+        final Player victim = (Player)event.getEntity();
+        Entity attacker = ((EntityDamageByEntityEvent)event).getDamager();
+
+        // If the victim is a visiting pmod they should be immune to all damage,
+        // so if that's the case shortcut here.
+        if (isVisiting(player)) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
         }
+
+        // The remaining damage exemptions all only apply to PvP damage, so if
+        // the attacker isn't a player, we don't care:
+        if (!attacker instanceof Player) {
+            return;
+        }
+
+        // Right, so we're going to nerf the damage - in some cases we want
+        // to explain why - but only try to explain if the killer is a player
+        if (isProtected(victim)) {
+            attacker.sendMessage(victim.getName() + " is PvP protected. Leave them alone!");
+        } else if (isProtected(attacker)) {
+            attacker.sendMessage("You are PvP protected. Type /pvpon to disable");
+        } else if (is_newbie(victim)) {
+            attacker.sendMessage(victim().getName() + " is a newbie, leave them alone!");
+        } else if (is_newbie(attacker)) {
+            attacker.sendMessage(
+                "You are still PvP protected as a new player, and thus cannot attack others yet"
+            );
+        }
+
+        // Cancel the damage
+        event.setCancelled(true);
+        event.setDamage(0);
+        return;
+    }
+
+    private boolean isProtected(final Player player) {
+        File userdata = new File(
+            Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(),
+            File.separator + "UserData"
+        );
+        protected_file = new File(userdata, player.getName() + "-protected.yml");
+        return protected_file.exists();
+    }
+
+    private boolean isVisiting(final Player player) {
+        File userdata = new File(
+            Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(),
+            File.separator + "UserData"
+        );
+        visit_file = new File(userdata, player.getName() + "-visit.yml");
+        return visit_file.exists();
     }
        	
     	
