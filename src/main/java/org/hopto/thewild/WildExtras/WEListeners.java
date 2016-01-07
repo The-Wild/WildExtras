@@ -257,11 +257,11 @@ public class WEListeners implements Listener {
     private StatsAPI CachedStatsAPI;
 
     private StatsAPI getStatsAPI() {
-        if (CachedstatsAPI) {
+        if (CachedstatsAPI != null) {
             return CachedstatsAPI;
         } else {
             RegisteredServiceProvider<StatsAPI> stats = getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
-            if (stats == null) {
+            if (stats != null) {
                 CachedStatsAPI = stats.getProvider();
             }
             return CachedStatsAPI;
