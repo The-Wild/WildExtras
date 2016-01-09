@@ -152,6 +152,13 @@ public class WEListeners implements Listener {
         final Player victim = (Player)event.getEntity();
         Entity attacker = ((EntityDamageByEntityEvent)event).getDamager();
 
+        // If the player is being show with a bow, though, the "damager" will be
+        // an arrow, and we need to find out who fired that arrow:
+        if (attacker.getType() == EntityType.ARROW) {
+            Projectile arrow = (Arrow) event.getDamager();
+            attacker = arrow.getShooter();
+        }
+
         // If the victim is a visiting pmod they should be immune to all damage,
         // or if the attacker is a visiting pmod they shouldn't be able to
         // damage other players, so if either is the case shortcut here
