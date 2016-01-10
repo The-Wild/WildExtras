@@ -278,10 +278,11 @@ public class WEListeners implements Listener {
                 + "http://the-wild.tk/welcome for helpful info!");
         } else {
             if (isNewbie(player)) {
-            event.getPlayer().sendMessage(
-               "Welcome back!  Remember, there's lots of useful info"
-                + " in the welcome guide: http://the-wild.tk/welcome"
-            );
+                event.getPlayer().sendMessage(
+                    "Welcome back!  Remember, there's lots of useful info"
+                    + " in the welcome guide: http://the-wild.tk/welcome"
+                );
+            }
         }     
 
         // And if they're a newbie, colour their name
