@@ -275,7 +275,7 @@ public class WEListeners implements Listener {
             // Welcome them, too
             event.getPlayer().sendMessage(
                 "Welcome aboard!  Please see the welcome guide "
-                + "http://the-wild.tk/welcome for helpful info!);
+                + "http://the-wild.tk/welcome for helpful info!");
         } else {
             if (isNewbie(player)) {
             event.getPlayer().sendMessage(
