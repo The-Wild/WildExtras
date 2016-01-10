@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Arrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,6 +28,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import nl.lolmewn.stats.api.StatsAPI;
 
 public class WEListeners implements Listener {
@@ -151,19 +153,36 @@ public class WEListeners implements Listener {
         }
 
         final Player victim = (Player)event.getEntity();
+
+        // If the attacker is not a player, then allow the damage unless it's a
+        // visiting pmod being attacked:
         Entity attacker = ((EntityDamageByEntityEvent)event).getDamager();
+        if (!(attacker instanceof Player)) {
+            if (isVisiting(victim)) {
+                event.setCancelled(true);
+                event.setDamage(0);
+            }
+            return;
+        } else {
+            attacker = (Player) attacker;
+        }
+
+        Bukkit.getLogger().warning("Handling damage on " + victim + " named "
+                + victim.getName() + " from " + attacker);
 
         // If the player is being show with a bow, though, the "damager" will be
         // an arrow, and we need to find out who fired that arrow:
-        if (attacker.getType() == EntityType.ARROW) {
-            Projectile arrow = (Arrow) event.getDamager();
-            attacker = arrow.getShooter();
+        if (event.getEntity() instanceof Arrow) {
+            Arrow arrow = (Arrow) event.getEntity();
+            if (arrow.getShooter() instanceof Player) {
+                attacker = (Player) arrow.getShooter();
+            }
         }
 
         // If the victim is a visiting pmod they should be immune to all damage,
         // or if the attacker is a visiting pmod they shouldn't be able to
         // damage other players, so if either is the case shortcut here
-        if (isVisiting(player) || isVisiting(attacker)) {
+        if (isVisiting(victim) || isVisiting(attacker)) {
             event.setCancelled(true);
             event.setDamage(0);
             return;
@@ -171,7 +190,7 @@ public class WEListeners implements Listener {
 
         // The remaining damage exemptions all only apply to PvP damage, so if
         // the attacker isn't a player, we don't care:
-        if (!attacker instanceof Player) {
+        if (!(attacker instanceof Player)) {
             return;
         }
 
@@ -182,7 +201,7 @@ public class WEListeners implements Listener {
         } else if (isProtected(attacker)) {
             attacker.sendMessage("You are PvP protected. Type /pvpon to disable");
         } else if (isNewbie(victim)) {
-            attacker.sendMessage(victim().getName() + " is a newbie, leave them alone!");
+            attacker.sendMessage(victim.getName() + " is a newbie, leave them alone!");
         } else if (isNewbie(attacker)) {
             attacker.sendMessage(
                 "You are still PvP protected as a new player, and thus cannot attack others yet"
@@ -195,31 +214,30 @@ public class WEListeners implements Listener {
         return;
     }
 
-    private boolean isProtected(final Player player) {
+    private boolean isProtected(final Entity player) {
         File userdata = new File(
             Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(),
             File.separator + "UserData"
         );
-        protected_file = new File(userdata, player.getName() + "-protected.yml");
+        File protected_file = new File(userdata, player.getName() + "-protected.yml");
         return protected_file.exists();
     }
 
-    private boolean isVisiting(final Player player) {
+    private boolean isVisiting(final Entity player) {
         File userdata = new File(
             Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(),
             File.separator + "UserData"
         );
-        visit_file = new File(userdata, player.getName() + "-visit.yml");
+        File visit_file = new File(userdata, player.getName() + "-visit.yml");
         return visit_file.exists();
     }
        	
-    private boolean isNewbie(final Player player) {
-        StatsAPI statsAPI = getStatsAPI();
+    private boolean isNewbie(final Entity player) {
         if (statsAPI == null) {
             // Fail-safe if Stats API wasn't available for whatever reason
             return false;
         }
-        Int playtime_secs = statsAPI.getPlaytime(player.getName(), "world");
+        double playtime_secs = statsAPI.getPlaytime(player.getName());
         return (playtime_secs < 60 * 60);
     }
     
@@ -258,22 +276,42 @@ public class WEListeners implements Listener {
         // And if they're a newbie, colour their name
         if (isNewbie(player)) {
             player.setPlayerListName("&d" + playername);
-            player.setPlayerName("&d" + playername);
+            player.setDisplayName("&d" + playername);
         }
     }
-    
+/*    
     private StatsAPI CachedStatsAPI;
 
     private StatsAPI getStatsAPI() {
-        if (CachedstatsAPI != null) {
-            return CachedstatsAPI;
+        if (CachedStatsAPI != null) {
+            return CachedStatsAPI;
         } else {
-            RegisteredServiceProvider<StatsAPI> stats = getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
+            StatsAPI stats 
+                = this.getServer().getServicesManager().load(
+                        nl.lolmewn.stats.api.StatsAPI.class
+                );
             if (stats != null) {
-                CachedStatsAPI = stats.getProvider();
+                CachedStatsAPI = stats;
             }
             return CachedStatsAPI;
         }
+    }
+*/
+
+private StatsAPI statsAPI;
+
+private boolean setupStatsAPI(){
+        RegisteredServiceProvider<StatsAPI> stats = Bukkit.getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
+        
+        if (stats!= null) {
+            //statsAPI = stats.getProvider();
+        }
+        Bukkit.getLogger().warning("setupStatsAPI() called, result " + statsAPI);
+        return (statsAPI != null);
+    }
+    // Set up the Stats API when we're enabled
+    public void onEnable() {
+        setupStatsAPI();
     }
 
 
