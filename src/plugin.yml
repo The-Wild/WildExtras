@@ -1,7 +1,7 @@
 name: WildExtras
 main: org.hopto.thewild.WildExtras.WildExtras
 version: 0.2
-depends: [Essentials, dynmap]
+depends: [Essentials, dynmap, Stats]
 commands:
    pvpon:
       description: Removes pvp spam protection!
