@@ -146,36 +146,85 @@ public class WEListeners implements Listener {
     
     //prevent pvp damage on visits - and on pvp protect because of spam kills - also prevent protected person from pvping.
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
-    public void onEntityDamage(final EntityDamageEvent event) {
+    public void onDamage(final EntityDamageEvent event) {
         // If it's not a player being damaged, we don't care.
         if (!(event.getEntity() instanceof Player)) {
+            debugmsg(
+                    "Ignoring non-player damage to " + event.getEntity()
+            );
             return;
         }
 
         final Player victim = (Player)event.getEntity();
 
-        // If the attacker is not a player, then allow the damage unless it's a
-        // visiting pmod being attacked:
-        Entity attacker = ((EntityDamageByEntityEvent)event).getDamager();
-        if (!(attacker instanceof Player)) {
-            if (isVisiting(victim)) {
-                event.setCancelled(true);
-                event.setDamage(0);
-            }
+        debugmsg("event.getEntity gives us a " + event.getEntity().getClass());
+
+        // If the victim is in visit mode, they're immune to all damage, so nerf
+        // it and go no further if so:
+        if (isVisiting(victim)) {
+            debugmsg(event + " damage to " + victim.getName()
+                    + " blocked due to visit mode");
+            event.setCancelled(true);
+            event.setDamage(0);
             return;
-        } else {
-            attacker = (Player) attacker;
         }
 
-        Bukkit.getLogger().warning("Handling damage on " + victim + " named "
+        // If the attacker is not a player, then allow the damage unless it's a
+        // visiting pmod being attacked:
+        Entity attacker = null;
+
+        if (event instanceof EntityDamageByEntityEvent) {
+            attacker = ((EntityDamageByEntityEvent)event).getDamager();
+            debugmsg("attacker class " + attacker.getClass());
+            if (((EntityDamageByEntityEvent)event).getDamager() instanceof Arrow) {
+                debugmsg("damager was instanceof Arrow");
+                Arrow arrow = (Arrow) ((EntityDamageByEntityEvent)event).getDamager();
+                if (arrow.getShooter() instanceof Player) {
+                    attacker = (Player) arrow.getShooter();
+                    debugmsg(
+                        victim.getName() + " hit by arrow from "
+                        + attacker.getName()
+                    );
+                } else {
+                    debugmsg("Arrow fired by non-player " + attacker);
+                }
+            }
+        } else {
+            debugmsg("Unknown damage source " + event);
+        }
+
+        if (attacker == null && !isVisiting(victim)) {
+            debugmsg("Failed to determine attacker, allow damage");
+            return;
+        }
+
+        // Remainder of checks concern player-to-player damage, so if we
+        // determined it's non-player-caused, ignore.
+            
+        if (!(attacker instanceof Player)) {
+            debugmsg("Damage from non-player " + attacker);
+            return;
+        }
+
+        debugmsg("Handling damage on " + victim + " named "
                 + victim.getName() + " from " + attacker);
 
         // If the player is being show with a bow, though, the "damager" will be
         // an arrow, and we need to find out who fired that arrow:
         if (event.getEntity() instanceof Arrow) {
+            debugmsg(
+                    victim.getName() + " got shot with an arrow"
+            );
             Arrow arrow = (Arrow) event.getEntity();
             if (arrow.getShooter() instanceof Player) {
                 attacker = (Player) arrow.getShooter();
+                debugmsg(
+                        "Shooter was " + attacker.getName()
+                );
+            } else {
+                debugmsg(
+                        "Shooter was not a player though"
+                );
             }
         }
 
@@ -183,6 +232,7 @@ public class WEListeners implements Listener {
         // or if the attacker is a visiting pmod they shouldn't be able to
         // damage other players, so if either is the case shortcut here
         if (isVisiting(victim) || isVisiting(attacker)) {
+            debugmsg("Victim or attacker is visiting, damage blocked"); 
             event.setCancelled(true);
             event.setDamage(0);
             return;
@@ -191,33 +241,45 @@ public class WEListeners implements Listener {
         // The remaining damage exemptions all only apply to PvP damage, so if
         // the attacker isn't a player, we don't care:
         if (!(attacker instanceof Player)) {
+            debugmsg("Attacked by non-player, ignoring");
             return;
         }
 
         // Right, so we're going to nerf the damage - in some cases we want
         // to explain why - but only try to explain if the killer is a player
+        boolean allowDamage = true;
         if (isProtected(victim)) {
+            debugmsg("Protected player can't be attacked");
             attacker.sendMessage(victim.getName() + " is PvP protected. Leave them alone!");
+            allowDamage = false;
         } else if (isProtected(attacker)) {
+            debugmsg("Protected player can't attack others");
             attacker.sendMessage("You are PvP protected. Type /pvpon to disable");
+            allowDamage = false;
         } else if (isNewbie(victim)) {
+            debugmsg("Newbie protected from attack");
             attacker.sendMessage(victim.getName() + " is a newbie, leave them alone!");
+            allowDamage = false;
         } else if (isNewbie(attacker)) {
+            debugmsg("Newbie can't attack others yet");
             attacker.sendMessage(
                 "You are still PvP protected as a new player, and thus cannot attack others yet"
             );
+            allowDamage = false;
         }
 
-        // Cancel the damage
-        event.setCancelled(true);
-        event.setDamage(0);
+        if (!allowDamage) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            debugmsg("Damage prevented");
+        }
         return;
     }
 
     private boolean isProtected(final Entity player) {
         File userdata = new File(
             Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(),
-            File.separator + "UserData"
+            File.separator + "ProtectedUserData"
         );
         File protected_file = new File(userdata, player.getName() + "-protected.yml");
         return protected_file.exists();
@@ -233,11 +295,14 @@ public class WEListeners implements Listener {
     }
        	
     private boolean isNewbie(final Entity player) {
-        if (statsAPI == null) {
+        if (!setupStatsAPI()) {
             // Fail-safe if Stats API wasn't available for whatever reason
+            debugmsg("isNewbie bailing, stats API unavailable");
             return false;
         }
         double playtime_secs = statsAPI.getPlaytime(player.getName());
+        debugmsg("is_newbie for " + player.getName()
+            + " found play time " + playtime_secs);
         return (playtime_secs < 60 * 60);
     }
     
@@ -266,6 +331,7 @@ public class WEListeners implements Listener {
         String playername = player.getName();
         File playerfile = new File("plugins/WildExtras/"+playername);
         if (!playerfile.exists()) {
+            debugmsg("New player never seen before!");
             try {
                 playerfile.createNewFile();
             } catch (IOException e) {
@@ -282,11 +348,15 @@ public class WEListeners implements Listener {
                     "Welcome back!  Remember, there's lots of useful info"
                     + " in the welcome guide: http://the-wild.tk/welcome"
                 );
+                debugmsg("re-joining newbie");
+            } else {
+                debugmsg("Veteran player joined");
             }
         }     
 
         // And if they're a newbie, colour their name
         if (isNewbie(player)) {
+            debugmsg("Colouring newbie's name");
             player.setPlayerListName("&d" + playername);
             player.setDisplayName("&d" + playername);
         }
@@ -313,18 +383,24 @@ public class WEListeners implements Listener {
 private StatsAPI statsAPI;
 
 private boolean setupStatsAPI(){
-        RegisteredServiceProvider<StatsAPI> stats = Bukkit.getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
-        
-        if (stats!= null) {
-            //statsAPI = stats.getProvider();
-        }
-        Bukkit.getLogger().warning("setupStatsAPI() called, result " + statsAPI);
-        return (statsAPI != null);
-    }
-    // Set up the Stats API when we're enabled
-    public void onEnable() {
-        setupStatsAPI();
+
+    if (statsAPI != null) {
+        return true;
     }
 
+    RegisteredServiceProvider<StatsAPI> stats 
+        = Bukkit.getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
+    
+    if (stats!= null) {
+        statsAPI = stats.getProvider();
+    }
+    debugmsg("setupStatsAPI() called, result " + statsAPI);
+    return (statsAPI != null);
+}
+
+
+private void debugmsg(String message) {
+    Bukkit.getServer().broadcastMessage(message);
+}
 
 }
