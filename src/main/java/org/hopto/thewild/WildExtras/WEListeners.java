@@ -141,6 +141,7 @@ public class WEListeners implements Listener {
 		                 e.printStackTrace();
 		                    }	
 		    	victim.sendMessage("You are now protected from PvP! Use /pvpon to disable.");
+                        colorNick(victim);
 		 }
      }
     }
@@ -165,11 +166,12 @@ public class WEListeners implements Listener {
         final Player victim = (Player)event.getEntity();
 
 
+        
+        debugmsg("event.getEntity gives us a " + event.getEntity().getClass());
+
         // TEST: an easy way to trigger nick colour setting after initial
         // login without adding command handling:
         colorNick(victim);
-        
-        debugmsg("event.getEntity gives us a " + event.getEntity().getClass());
 
         // If the victim is in visit mode, they're immune to all damage, so nerf
         // it and go no further if so:
@@ -306,7 +308,22 @@ public class WEListeners implements Listener {
         return visit_file.exists();
     }
        	
+
+    HashMap<String, Boolean> newbieCacheResult = new HashMap<String, Boolean>();
+    HashMap<String, Long> newbieCacheTimestamp = new HashMap<String, Long>();
     private boolean isNewbie(final Entity player) {
+
+        debugmsg("isNewbie called for " + player.getName());
+        if (newbieCacheTimestamp.containsKey(player.getName())) {
+            long cachedRecordTimestamp = newbieCacheTimestamp.get(player.getName());
+            long currentTimestamp = System.currentTimeMillis() / 1000L;
+            if (cachedRecordTimestamp > (currentTimestamp - 60)) {
+                debugmsg("Using cached newbie entry for " + player.getName());
+                return newbieCacheResult.get(player.getName());
+            }
+        }
+
+        // OK, need to ask the Stats API, and cache the result:
         if (!setupStatsAPI()) {
             // Fail-safe if Stats API wasn't available for whatever reason
             debugmsg("isNewbie bailing, stats API unavailable");
@@ -315,7 +332,14 @@ public class WEListeners implements Listener {
         double playtime_secs = statsAPI.getPlaytime(player.getName());
         debugmsg("is_newbie for " + player.getName()
             + " found play time " + playtime_secs);
-        return (playtime_secs < 60 * 60);
+        boolean isNewbie =  (playtime_secs < 60 * 60);
+        newbieCacheResult.put(player.getName(), isNewbie);
+        newbieCacheTimestamp.put(
+                player.getName(), (long) System.currentTimeMillis() / 1000L
+        ); 
+        debugmsg("Calculated isNewbie result " + isNewbie + " for "
+                + player.getName());
+        return isNewbie;
     }
     
     
@@ -373,6 +397,7 @@ public class WEListeners implements Listener {
      * depending on whether they are a newbie or currently protected,
      * falling back to the default based on their GM group */
     public void colorNick(Player player) {
+        debugmsg("colorNick called for " + player.getName());
         ChatColor color = null;
         if (isNewbie(player)) {
                 color = ChatColor.LIGHT_PURPLE;
