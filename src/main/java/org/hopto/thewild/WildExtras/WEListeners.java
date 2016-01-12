@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
@@ -25,11 +26,17 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import nl.lolmewn.stats.api.StatsAPI;
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 
 public class WEListeners implements Listener {
 //old world config	
@@ -157,6 +164,11 @@ public class WEListeners implements Listener {
 
         final Player victim = (Player)event.getEntity();
 
+
+        // TEST: an easy way to trigger nick colour setting after initial
+        // login without adding command handling:
+        colorNick(victim);
+        
         debugmsg("event.getEntity gives us a " + event.getEntity().getClass());
 
         // If the victim is in visit mode, they're immune to all damage, so nerf
@@ -322,11 +334,10 @@ public class WEListeners implements Listener {
             }
         }
     }	   
-    
-    
+ 
     //create a file for each user so that wildbot knows who to trust!
     @EventHandler
-    public void onLogin(PlayerJoinEvent event) {
+    public void joinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playername = player.getName();
         File playerfile = new File("plugins/WildExtras/"+playername);
@@ -354,31 +365,52 @@ public class WEListeners implements Listener {
             }
         }     
 
-        // And if they're a newbie, colour their name
-        if (isNewbie(player)) {
-            debugmsg("Colouring newbie's name");
-            player.setPlayerListName("&d" + playername);
-            player.setDisplayName("&d" + playername);
-        }
+        // Set their nick colour appropriately
+        colorNick(player);
     }
-/*    
-    private StatsAPI CachedStatsAPI;
 
-    private StatsAPI getStatsAPI() {
-        if (CachedStatsAPI != null) {
-            return CachedStatsAPI;
-        } else {
-            StatsAPI stats 
-                = this.getServer().getServicesManager().load(
-                        nl.lolmewn.stats.api.StatsAPI.class
-                );
-            if (stats != null) {
-                CachedStatsAPI = stats;
+    /* Attempt to apply the appropriate colour to a player's nick,
+     * depending on whether they are a newbie or currently protected,
+     * falling back to the default based on their GM group */
+    public void colorNick(Player player) {
+        ChatColor color = null;
+        if (isNewbie(player)) {
+                color = ChatColor.LIGHT_PURPLE;
+        } else if (isProtected(player)) {
+                color = ChatColor.DARK_RED;
+        } else if (setupGroupManagerAPI()) {
+            String group = getPlayerGroup(player);
+            debugmsg(
+                "colorNick() got group " + group + " for " + player.getName()
+            );
+
+            if (group.equals("Mod")) {
+                color = ChatColor.GOLD;
+            } else if (group.equals("PlayerMod")) {
+                color = ChatColor.GRAY;
+            } else {
+                color = ChatColor.YELLOW;
             }
-            return CachedStatsAPI;
+        }
+
+        if (color != null) {
+            player.setPlayerListName(color + player.getName() + ChatColor.RESET);
+            player.setDisplayName(color + player.getName() + ChatColor.RESET);
         }
     }
-*/
+
+    public String getPlayerGroup(Player player) {
+        final AnjoPermissionsHandler handler
+            = groupManager.getWorldsHolder().getWorldPermissions(player);
+        if (handler == null) {
+            debugmsg("Failed to get permissions handler for " + player.getName());
+            return null;
+        } else {
+            return handler.getGroup(player.getName());
+        }
+    }
+            
+
 
 private StatsAPI statsAPI;
 
@@ -398,6 +430,20 @@ private boolean setupStatsAPI(){
     return (statsAPI != null);
 }
 
+private GroupManager groupManager;
+
+private boolean setupGroupManagerAPI() {
+    final PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+    final Plugin GMplugin = pluginManager.getPlugin("GroupManager");
+    if (GMplugin != null && GMplugin.isEnabled()) {
+        groupManager = (GroupManager)GMplugin;
+        debugmsg("Fetched GroupManager plugin");
+        return true;
+    } else {
+        debugmsg("Failed to obtain GroupManager plugin");
+        return false;
+    }
+}
 
 private void debugmsg(String message) {
     Bukkit.getServer().broadcastMessage(message);
