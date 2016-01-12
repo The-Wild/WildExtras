@@ -217,6 +217,7 @@ public final class WildExtras extends JavaPlugin {
 				f.delete();
 				org.hopto.thewild.WildExtras.WEListeners.deathmap.remove(pname);
 				sender.sendMessage("You are no longer PvP Protected");
+                                org.hopto.thewild.WildExtras.WEListeners.nickColor(sender);
 				return true;
 				} else {
 					sender.sendMessage("You are not PvP Protected");
