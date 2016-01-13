@@ -183,8 +183,8 @@ public class WEListeners implements Listener {
             return;
         }
 
-        // If the attacker is not a player, then allow the damage unless it's a
-        // visiting pmod being attacked:
+        // Work out who/what the attacker is.  How we do this differs depending
+        // on the type of damage - direct attack or projectile.
         Entity attacker = null;
 
         if (event instanceof EntityDamageByEntityEvent) {
