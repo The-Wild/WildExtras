@@ -207,7 +207,7 @@ public class WEListeners implements Listener {
             debugmsg("Unknown damage source " + event);
         }
 
-        if (attacker == null && !isVisiting(victim)) {
+        if (attacker == null) {
             debugmsg("Failed to determine attacker, allow damage");
             return;
         }
