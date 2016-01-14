@@ -56,7 +56,7 @@ public final class WildExtras extends JavaPlugin {
     }
         
         //Plugin plugin = Bukkit.getPluginManager().getPlugin("WildExtras"); */
-                weListeners = new WEListeners();
+                weListeners = new WEListeners(this);
 		getServer().getPluginManager().registerEvents(weListeners, this);
 		getLogger().info("WildExtras Started");
 		

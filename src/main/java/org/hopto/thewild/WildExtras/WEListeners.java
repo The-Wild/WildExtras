@@ -39,6 +39,12 @@ import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 
 public class WEListeners implements Listener {
+    public Plugin plugin;
+
+    WEListeners(Plugin caller_plugin) {
+        plugin = caller_plugin;
+    }
+
 //old world config	
 	//Dispenser blocking for old worlds
     @EventHandler
@@ -169,9 +175,6 @@ public class WEListeners implements Listener {
         
         debugmsg("event.getEntity gives us a " + event.getEntity().getClass());
 
-        // TEST: an easy way to trigger nick colour setting after initial
-        // login without adding command handling:
-        colorNick(victim);
 
         // If the victim is in visit mode, they're immune to all damage, so nerf
         // it and go no further if so:
@@ -360,9 +363,9 @@ public class WEListeners implements Listener {
     }	   
  
     //create a file for each user so that wildbot knows who to trust!
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void joinEvent(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         String playername = player.getName();
         File playerfile = new File("plugins/WildExtras/"+playername);
         if (!playerfile.exists()) {
@@ -377,20 +380,21 @@ public class WEListeners implements Listener {
             event.getPlayer().sendMessage(
                 "Welcome aboard!  Please see the welcome guide "
                 + "http://the-wild.tk/welcome for helpful info!");
-        } else {
-            if (isNewbie(player)) {
-                event.getPlayer().sendMessage(
-                    "Welcome back!  Remember, there's lots of useful info"
-                    + " in the welcome guide: http://the-wild.tk/welcome"
-                );
-                debugmsg("re-joining newbie");
-            } else {
-                debugmsg("Veteran player joined");
-            }
         }     
 
+        // Annoyingly, isNewbie called here finds a play time of 0.0 - I'm
+        // guessing that the stats plugin can't return details until they're
+        // fully in-game - so schedule a call to colorNick soon:
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin,
+            new Runnable() {
+                public void run() {
+                    debugmsg("Runnable running for " + player.getName());
+                    colorNick(player);
+                }
+            }, 50L
+        );
         // Set their nick colour appropriately
-        colorNick(player);
+        //colorNick(player);
     }
 
     /* Attempt to apply the appropriate colour to a player's nick,
