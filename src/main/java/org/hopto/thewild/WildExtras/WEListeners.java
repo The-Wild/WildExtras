@@ -163,17 +163,10 @@ public class WEListeners implements Listener {
     public void onDamage(final EntityDamageEvent event) {
         // If it's not a player being damaged, we don't care.
         if (!(event.getEntity() instanceof Player)) {
-            debugmsg(
-                    "Ignoring non-player damage to " + event.getEntity()
-            );
             return;
         }
 
         final Player victim = (Player)event.getEntity();
-
-
-        
-        debugmsg("event.getEntity gives us a " + event.getEntity().getClass());
 
 
         // If the victim is in visit mode, they're immune to all damage, so nerf
@@ -258,7 +251,6 @@ public class WEListeners implements Listener {
         // The remaining damage exemptions all only apply to PvP damage, so if
         // the attacker isn't a player, we don't care:
         if (!(attacker instanceof Player)) {
-            debugmsg("Attacked by non-player, ignoring");
             return;
         }
 
@@ -288,7 +280,10 @@ public class WEListeners implements Listener {
         if (!allowDamage) {
             event.setCancelled(true);
             event.setDamage(0);
-            debugmsg("Damage prevented");
+            debugmsg(
+                "Preventing damage to " + victim.getName() 
+                + " by " + attacker.getName()
+            );
         }
         return;
     }
@@ -475,7 +470,8 @@ private boolean setupGroupManagerAPI() {
 }
 
 private void debugmsg(String message) {
-    Bukkit.getServer().broadcastMessage(message);
+    //Bukkit.getServer().broadcastMessage(message);
+    plugin.getLogger().info(message);
 }
 
 }
