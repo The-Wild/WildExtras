@@ -41,7 +41,7 @@ public final class WildExtras extends JavaPlugin {
 	}
 
 
-
+        private WEListeners weListeners = null;
 	public void onEnable(){
 		
      /*   Plugin essentialsPlugin = Bukkit.getPluginManager().getPlugin("Essentials");
@@ -56,7 +56,8 @@ public final class WildExtras extends JavaPlugin {
     }
         
         //Plugin plugin = Bukkit.getPluginManager().getPlugin("WildExtras"); */
-		getServer().getPluginManager().registerEvents(new WEListeners(), this);
+                weListeners = new WEListeners(this);
+		getServer().getPluginManager().registerEvents(weListeners, this);
 		getLogger().info("WildExtras Started");
 		
 		 
@@ -217,6 +218,9 @@ public final class WildExtras extends JavaPlugin {
 				f.delete();
 				org.hopto.thewild.WildExtras.WEListeners.deathmap.remove(pname);
 				sender.sendMessage("You are no longer PvP Protected");
+                                if (player != null) {
+                                    weListeners.colorNick(player);
+                                }
 				return true;
 				} else {
 					sender.sendMessage("You are not PvP Protected");
