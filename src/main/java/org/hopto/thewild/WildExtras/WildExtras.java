@@ -400,6 +400,18 @@ public final class WildExtras extends JavaPlugin {
             Set set = sortedEntityTypes.entrySet();
             Iterator iterator = set.iterator();
             int typesSent = 0;
+            if (!iterator.hasNext()) {
+                sender.sendMessage(
+                    "Found no entities in this chunk. "
+                    + "(I find that hard to believe.)"
+                );
+                return false;
+            } else {
+                sender.sendMessage(
+                        "Entity types in chunk at around " +
+                        chunk.getX() * 16 + "," + chunk.getZ() * 16 + ":"
+                );
+            }
             while (iterator.hasNext() && typesSent < 8) {
                 Map.Entry entityTypeEntry = (Map.Entry)iterator.next();
                 String entityType = (String) entityTypeEntry.getKey();
