@@ -5,10 +5,22 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,6 +29,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -324,10 +337,107 @@ public final class WildExtras extends JavaPlugin {
 				}else{
 		 		   //no perms - no message
 		 		} 
-				
-	}	
+					
+        } else if(cmd.getName().equalsIgnoreCase("chunkentitycounts")){
+
+            HashMap<String,Integer> chunkEntityCounts = new HashMap<String,Integer>();
+            HashMap<String,String> playersInChunk = new HashMap<String,String>();
+            // TODO: support specifying world to look at
+            World world = Bukkit.getServer().getWorlds().get(0);
+            for (Chunk chunk : world.getLoadedChunks()) {
+                int entities = chunk.getEntities().length;
+                String chunkLoc = chunk.getWorld().getName() + ":" 
+                    + chunk.getX()*16 + "," + chunk.getZ()*16;
+                chunkEntityCounts.put(chunkLoc, entities);
+
+                // For every entity in the chunk, if it's a player, record them
+                // too
+                ArrayList<String> playerNames = new ArrayList<String>();
+                for (Entity entity : chunk.getEntities()) {
+                    if (entity instanceof Player) {
+                        playerNames.add(entity.getName());
+                    }
+                }
+                
+                //playersInChunk.put(chunkLoc, String.join(',', playerNames));
+                playersInChunk.put(chunkLoc, playerNames.toString());
+            }
+
+            Map<String,Integer> sortedmap = sortByValues(chunkEntityCounts);
+            Set set = sortedmap.entrySet();
+            Iterator iterator = set.iterator();
+            int chunksSent = 0;
+            while (iterator.hasNext() && chunksSent < 8) {
+                Map.Entry chunk = (Map.Entry)iterator.next();
+                String chunkLoc = (String) chunk.getKey();
+                Integer entityCount = (Integer) chunk.getValue();
+                String players = playersInChunk.get(chunkLoc);
+                sender.sendMessage(
+                    chunkLoc + ": " + entityCount + " entities, players: "
+                    + players
+                );
+                chunksSent++;
+            }
+
+            
+        } else if(cmd.getName().equalsIgnoreCase("chunkentities")){
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Must be used in-game by a player");
+                return false;
+            }
+            Player player = (Player) sender;
+            Chunk chunk = player.getLocation().getChunk();
+            HashMap <String,Integer> entityTypes = new HashMap<String,Integer>();
+            for (Entity entity : chunk.getEntities()) {
+                String entityType = (String) entity.getType().getName();
+
+                Integer oldCount = entityTypes.containsKey(entityType)
+                    ? entityTypes.get(entityType) : 0;
+                entityTypes.put(entityType, oldCount + 1);
+            }
+
+            Map <String,Integer> sortedEntityTypes = sortByValues(entityTypes);
+            Set set = sortedEntityTypes.entrySet();
+            Iterator iterator = set.iterator();
+            int typesSent = 0;
+            while (iterator.hasNext() && typesSent < 8) {
+                Map.Entry entityTypeEntry = (Map.Entry)iterator.next();
+                String entityType = (String) entityTypeEntry.getKey();
+                Integer entityCount = (Integer) entityTypeEntry.getValue();
+                sender.sendMessage(
+                        entityType + ": " + entityCount
+                );
+            }
+
+        }
 		return false; 
-	}   
-}	    
+    }   
+
+    // Is this really what you have to do in order to sort a hashmap by value in
+    // Java? I find this horrible!
+    // This is from http://beginnersbook.com/2013/12/how-to-sort-hashmap-in-java-by-keys-and-values/
+      private static HashMap sortByValues(HashMap map) { 
+       List list = new LinkedList(map.entrySet());
+       // Defined Custom Comparator here
+       Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+               return ((Comparable) ((Map.Entry) (o2)).getValue())
+                  .compareTo(((Map.Entry) (o1)).getValue());
+            }
+       });
+
+       // Here I am copying the sorted list in HashMap
+       // using LinkedHashMap to preserve the insertion order
+       HashMap sortedHashMap = new LinkedHashMap();
+       for (Iterator it = list.iterator(); it.hasNext();) {
+              Map.Entry entry = (Map.Entry) it.next();
+              sortedHashMap.put(entry.getKey(), entry.getValue());
+       } 
+       return sortedHashMap;
+  }
+}
+
+
+
 
 

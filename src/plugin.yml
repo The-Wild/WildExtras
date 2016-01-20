@@ -36,6 +36,16 @@ commands:
       usage: /makevisitinv 
       permission: wildextras.makevisitinv
       permission-message: You can't do that!
+   chunkentitycounts:
+      description: Mod only - entity counts by chunk
+      usage: /chunkentitycounts
+      permission: wildextras.chunkentitycounts
+      permission-message: You can't do that!
+   chunkentities:
+      description: Mod only - entity types in the chunk you're in
+      usage: /chunkentities
+      permission: wildextras.chunkentities
+      permission-message: You can't do that!
 permissions:
     wildextras.*:
         description: Gives access to all wildextras commands
