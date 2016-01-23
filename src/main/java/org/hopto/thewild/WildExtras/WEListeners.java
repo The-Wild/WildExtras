@@ -396,7 +396,10 @@ public class WEListeners implements Listener {
      * depending on whether they are a newbie or currently protected,
      * falling back to the default based on their GM group */
     public void colorNick(Player player) {
-        debugmsg("colorNick called for " + player.getName());
+        debugmsg(
+                "colorNick called for " + player.getName() + "("
+                + player.getDisplayName() + ")"
+        );
         ChatColor color = null;
         if (isNewbie(player)) {
                 color = ChatColor.LIGHT_PURPLE;
