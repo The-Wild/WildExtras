@@ -330,7 +330,7 @@ public class WEListeners implements Listener {
         double playtime_secs = statsAPI.getPlaytime(player.getName());
         debugmsg("is_newbie for " + player.getName()
             + " found play time " + playtime_secs);
-        boolean isNewbie =  (playtime_secs < 60 * 60);
+        boolean isNewbie =  (playtime_secs < 60 * 60 * 4);
         newbieCacheResult.put(player.getName(), isNewbie);
         newbieCacheTimestamp.put(
                 player.getName(), (long) System.currentTimeMillis() / 1000L
