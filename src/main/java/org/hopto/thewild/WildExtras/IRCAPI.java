@@ -33,7 +33,7 @@ import com.ensifera.animosity.craftirc.EndPoint.Type;
     }
 	    
 	    public void sendToIRC(String message) {
-	            final RelayedMessage m = craftirc.newMsgToTag(this, "the-wild2", "generic");
+	            final RelayedMessage m = craftirc.newMsgToTag(this, "the-wild", "generic");
 	        	m.setField("message", message);
 	            m.post();
 	    }
