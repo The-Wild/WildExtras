@@ -28,8 +28,6 @@ import com.ensifera.animosity.craftirc.EndPoint.Type;
 	    
 	    public void broadcastMessage(String message) {
 	          final RelayedMessage rm = craftirc.newMsg(this, null, "generic");
-	          	rm.setField("target", "the-wild2");
-	          	rm.setField("trgChannel", "the-wild2");
 	        	rm.setField("message", message);
 	            rm.post();
     }
