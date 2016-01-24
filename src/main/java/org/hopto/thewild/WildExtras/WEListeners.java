@@ -473,8 +473,12 @@ private boolean setupGroupManagerAPI() {
 }
 
 private void debugmsg(String message) {
+	WildExtras WildExtras = new WildExtras();
+	boolean debug = WildExtras.debug;
+if (debug) {
     //Bukkit.getServer().broadcastMessage(message);
     plugin.getLogger().info(message);
+}
 }
 
 }

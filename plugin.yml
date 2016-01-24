@@ -3,6 +3,11 @@ main: org.hopto.thewild.WildExtras.WildExtras
 version: 0.3
 depends: [Essentials, dynmap, Stats, GroupManager]
 commands:
+   wedebug:
+      description: Toggles verbose logging!
+      usage: /wedebug
+      permission: wildextras.debug
+      permission-message: You can't do that!
    pvpon:
       description: Removes pvp spam protection!
       usage: /pvpon

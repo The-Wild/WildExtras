@@ -78,13 +78,20 @@ public final class WildExtras extends JavaPlugin {
 	public void onDisable(){
 		getLogger().info("WildExtras Stopped");
 	}
-	
+	public boolean debug;
 	public HashMap<String, String> VisitMap = new HashMap<String, String>();
 	//Command Listener
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 
 		//Arrow Clear Command
-		if(cmd.getName().equalsIgnoreCase("arrowclear")){
+		if(cmd.getName().equalsIgnoreCase("wedebug")){
+	    	if(sender.hasPermission("wildextras.debug")) {
+	    		debug = !debug;
+			}else{
+	    		   //no perms - no message
+	    		}			
+			return true;
+			} else if(cmd.getName().equalsIgnoreCase("arrowclear")){
     	if(sender.hasPermission("wildextras.arrowclear")) {
     		   //Do something
     		
