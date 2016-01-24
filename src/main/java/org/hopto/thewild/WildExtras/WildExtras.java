@@ -89,9 +89,12 @@ public final class WildExtras extends JavaPlugin {
 	    		
 	    		//EXAMPLE IRC API
 	    		IRCAPI IRCAPI = new IRCAPI();
+	    		//register the endpoint
 	    		IRCAPI.setupAPI();
+	    		//broadcast to game and IRC
 	    		IRCAPI.broadcastMessage("hi from WildExtras");
-	    		IRCAPI.sendToIRC("just to IRC???");
+	    		//Send only to IRC
+	    		IRCAPI.sendToIRC("only for irc guys");
 	            //Disconnect endpoint from CraftIRC
 	            IRCAPI.disableAPI();
 	            
