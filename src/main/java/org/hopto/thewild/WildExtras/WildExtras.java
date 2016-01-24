@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.*;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -35,11 +36,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.hopto.thewild.WildExtras.InventoryConvert;
 import org.hopto.thewild.WildExtras.LocationStringer;
+import org.hopto.thewild.WildExtras.IRCAPI;
 
 import com.earth2me.essentials.Essentials;
+import com.ensifera.animosity.craftirc.CraftIRC;
+import com.ensifera.animosity.craftirc.EndPoint;
+import com.ensifera.animosity.craftirc.RelayedMessage;
+import com.ensifera.animosity.craftirc.CraftIRC;
+import com.ensifera.animosity.craftirc.EndPoint;
+import com.ensifera.animosity.craftirc.RelayedMessage;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 
 
@@ -48,35 +60,21 @@ import com.earth2me.essentials.Essentials;
 
 public final class WildExtras extends JavaPlugin {
 	//public static Essentials essentials;
-			
+	public static WildExtras plugin;
 	public class InventoryConvert {
 
 	}
 
-
         private WEListeners weListeners = null;
 	public void onEnable(){
-		
-     /*   Plugin essentialsPlugin = Bukkit.getPluginManager().getPlugin("Essentials");
-
-        if (essentialsPlugin.isEnabled() && (essentialsPlugin instanceof Essentials)) {
-        	
-            this.essentials = (Essentials) essentialsPlugin;
-    } else {
-           //could not hook
-    	Bukkit.getPluginManager().disablePlugin(this);
-    	
-    }
-        
-        //Plugin plugin = Bukkit.getPluginManager().getPlugin("WildExtras"); */
-                weListeners = new WEListeners(this);
+		plugin = this;
+	    weListeners = new WEListeners(this);
 		getServer().getPluginManager().registerEvents(weListeners, this);
-		getLogger().info("WildExtras Started");
-		
-		 
+		getLogger().info("WildExtras Started"); 
 	}
 	public void onDisable(){
 		getLogger().info("WildExtras Stopped");
+		plugin = null;
 	}
 	public boolean debug;
 	public HashMap<String, String> VisitMap = new HashMap<String, String>();
@@ -87,7 +85,16 @@ public final class WildExtras extends JavaPlugin {
 		if(cmd.getName().equalsIgnoreCase("wedebug")){
 	    	if(sender.hasPermission("wildextras.debug")) {
 	    		debug = !debug;
-	    		sender.sendMessage("Debug is now :" + debug);
+	    		sender.sendMessage("Debug set to:" + debug);
+	    		
+	    		//EXAMPLE IRC API
+	    		IRCAPI IRCAPI = new IRCAPI();
+	    		final RelayedMessage IRC = IRCAPI.setupAPI();
+	            IRC.setField("message", "Hi from Extras!");
+	            IRC.post();
+	            //Disconnect endpoint from CraftIRC
+	            IRCAPI.disableAPI();
+	            
 			}else{
 	    		   //no perms - no message
 	    		}			
@@ -103,25 +110,12 @@ public final class WildExtras extends JavaPlugin {
 				//would be nice to check if its moving but i cant seem to do it right now					
 					arrow.remove();
 			}
-
 		}
-		
-
 		}else{
     		   //no perms - no message
     		}
 		
 		return true;
-	/*	} else if(cmd.getName().equalsIgnoreCase("mutelist")){
-			if(sender.hasPermission("wildextras.visit")) {
-				for eachuser in essentials.getUser() {
-				essentials.getUser(eachuser)
-				}				
-				
-			}
-			//no perms
-			return false;
-			*/
 		} else if(cmd.getName().equalsIgnoreCase("va")){
 			//visit accept
 			//get sender details

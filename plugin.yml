@@ -1,7 +1,8 @@
 name: WildExtras
 main: org.hopto.thewild.WildExtras.WildExtras
 version: 0.3
-depends: [Essentials, dynmap, Stats, GroupManager]
+depends: [CraftIRC, Essentials, dynmap, Stats, GroupManager]
+softdepend: [zzzZZ, EZZals]
 commands:
    wedebug:
       description: Toggles verbose logging!
