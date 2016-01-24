@@ -87,6 +87,7 @@ public final class WildExtras extends JavaPlugin {
 		if(cmd.getName().equalsIgnoreCase("wedebug")){
 	    	if(sender.hasPermission("wildextras.debug")) {
 	    		debug = !debug;
+	    		sender.sendMessage("Debug is now :" + debug);
 			}else{
 	    		   //no perms - no message
 	    		}			
