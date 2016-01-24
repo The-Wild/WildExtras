@@ -86,7 +86,7 @@ public final class WildExtras extends JavaPlugin {
 	    	if(sender.hasPermission("wildextras.debug")) {
 	    		debug = !debug;
 	    		sender.sendMessage("Debug set to: " + debug);
-	    		
+	    		/*
 	    		//EXAMPLE IRC API
 	    		IRCAPI IRCAPI = new IRCAPI();
 	    		//register the endpoint
@@ -97,7 +97,7 @@ public final class WildExtras extends JavaPlugin {
 	    		IRCAPI.sendToIRC("only for irc guys");
 	            //Disconnect endpoint from CraftIRC
 	            IRCAPI.disableAPI();
-	            
+	            */
 			}else{
 	    		   //no perms - no message
 	    		}			
