@@ -86,18 +86,6 @@ public final class WildExtras extends JavaPlugin {
 	    	if(sender.hasPermission("wildextras.debug")) {
 	    		debug = !debug;
 	    		sender.sendMessage("Debug set to: " + debug);
-	    		/*
-	    		//EXAMPLE IRC API
-	    		IRCAPI IRCAPI = new IRCAPI();
-	    		//register the endpoint
-	    		IRCAPI.setupAPI();
-	    		//broadcast to game and IRC
-	    		IRCAPI.broadcastMessage("hi from WildExtras");
-	    		//Send only to IRC
-	    		IRCAPI.sendToIRC("only for irc guys");
-	            //Disconnect endpoint from CraftIRC
-	            IRCAPI.disableAPI();
-	            */
 			}else{
 	    		   //no perms - no message
 	    		}			

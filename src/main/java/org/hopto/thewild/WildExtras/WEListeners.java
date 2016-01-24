@@ -365,6 +365,16 @@ public class WEListeners implements Listener {
         File playerfile = new File("plugins/WildExtras/"+playername);
         if (!playerfile.exists()) {
             debugmsg("New player never seen before!");
+    		//Setup IRC API
+    		IRCAPI IRCAPI = new IRCAPI();
+    		//register the endpoint
+    		IRCAPI.setupAPI();
+    		//broadcast to game and IRC - Dont need this because game is already Messaged
+    		//IRCAPI.broadcastMessage("hi from WildExtras");
+    		//Send only to IRC
+    		IRCAPI.sendToIRC("Please welcome " + playername + " to the server!");
+            //Disconnect endpoint from CraftIRC
+            IRCAPI.disableAPI();
             try {
                 playerfile.createNewFile();
             } catch (IOException e) {
