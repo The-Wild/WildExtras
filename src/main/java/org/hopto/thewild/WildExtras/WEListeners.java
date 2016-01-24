@@ -372,7 +372,7 @@ public class WEListeners implements Listener {
     		//broadcast to game and IRC - Dont need this because game is already Messaged
     		//IRCAPI.broadcastMessage("hi from WildExtras");
     		//Send only to IRC
-    		IRCAPI.sendToIRC("Please welcome " + playername + " to the server!");
+    		IRCAPI.sendToIRC("%pink%Please welcome %yellow%" + playername + " %pink%to the server!");
             //Disconnect endpoint from CraftIRC
             IRCAPI.disableAPI();
             try {
