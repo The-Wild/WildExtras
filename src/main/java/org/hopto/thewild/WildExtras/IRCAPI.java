@@ -13,26 +13,41 @@ import com.ensifera.animosity.craftirc.EndPoint.Type;
 	public class IRCAPI  implements EndPoint {
 	    private final String exampletag = "WildExtras";
 	    WildExtras WildExtras = org.hopto.thewild.WildExtras.WildExtras.plugin;
-	    
+	    CraftIRC craftirc = null;
 	       
-	    public RelayedMessage setupAPI() {
+	    public void setupAPI() {
 	        final Plugin plugin = WildExtras.getServer().getPluginManager().getPlugin("CraftIRC");
 	        if ((plugin == null) || !plugin.isEnabled() || !(plugin instanceof CraftIRC)) {
-	            WildExtras.getLogger().warning("no CraftIRC API!");
-	            return null;
+	            WildExtras.getLogger().warning("no CraftIRC API!");	        
 	        } else {
-	            final CraftIRC craftirc = (CraftIRC) plugin;
+	            craftirc = (CraftIRC) plugin;
 	            craftirc.registerEndPoint(this.exampletag, this);
-	            final RelayedMessage rm = craftirc.newMsg(this, null, "generic");
-	            return rm;
 	        }
 	    }
+
+	    
+	    public void broadcastMessage(String message) {
+	          final RelayedMessage rm = craftirc.newMsg(this, null, "generic");
+	          	rm.setField("target", "the-wild2");
+	          	rm.setField("trgChannel", "the-wild2");
+	        	rm.setField("message", message);
+	            rm.post();
+    }
+	    
+	    public void sendToIRC(String message) {
+	            final RelayedMessage m = craftirc.newMsgToTag(this, "the-wild2", "generic");
+	        	m.setField("message", message);
+	            m.post();
+	    }
+	    
+		    
 
 	    
 	    public void disableAPI() {
 	        final Plugin plugin = WildExtras.getServer().getPluginManager().getPlugin("CraftIRC");
 	        if (((plugin != null) && !plugin.isEnabled()) || (plugin instanceof CraftIRC)) {
 	            ((CraftIRC) plugin).unregisterEndPoint(this.exampletag);
+	            craftirc = null;
 	        }
 	    }
 
