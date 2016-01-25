@@ -372,7 +372,8 @@ public class WEListeners implements Listener {
     		//broadcast to game and IRC - Dont need this because game is already Messaged
     		//IRCAPI.broadcastMessage("hi from WildExtras");
     		//Send only to IRC
-    		IRCAPI.sendToIRC("%pink%Please welcome %yellow%" + playername + " %pink%to the server!");
+    		String myMessage = ChatColor.LIGHT_PURPLE + "Please welcome" + ChatColor.WHITE + " " + playername + ChatColor.LIGHT_PURPLE + " to The-Wild!!";
+    		IRCAPI.sendToIRC(myMessage);
             //Disconnect endpoint from CraftIRC
             IRCAPI.disableAPI();
             try {
@@ -483,7 +484,7 @@ private boolean setupGroupManagerAPI() {
 }
 
 private void debugmsg(String message) {
-	WildExtras WildExtras = new WildExtras();
+	WildExtras WildExtras = org.hopto.thewild.WildExtras.WildExtras.plugin;
 	boolean debug = WildExtras.debug;
 if (debug) {
     //Bukkit.getServer().broadcastMessage(message);
