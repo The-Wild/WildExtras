@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Arrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,6 +21,7 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -28,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.Location;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -340,7 +343,31 @@ public class WEListeners implements Listener {
         return isNewbie;
     }
     
-    
+   
+    // Prevent pigmen near spawn targetting players
+    @EventHandler
+    public void onTargetEvent (EntityTargetEvent e) {
+        if (!(e.getEntity() instanceof PigZombie)) {
+            return;
+        }
+
+        // OK, find out where this pigzombie is - if they're near spawn, don't
+        // allow them to target anyone
+        final PigZombie piggie = (PigZombie) e.getEntity();
+        final Location pigLocation = piggie.getLocation();
+        // TODO: take the protected location(s) from config
+        final Location spawnLocation = new Location(
+                piggie.getWorld(), 2601, 70, 2559
+        );
+
+        if (pigLocation.distance(spawnLocation) < 100) {
+            debugmsg("Blocking PigZombie target event near spawn");
+            e.setCancelled(true);
+            //piggie.setAngry(false); // Take a chill pill, piggie dude.
+            //piggie.setAnger(0);  // similar.
+            piggie.remove();
+        }
+    }
     
     
     
