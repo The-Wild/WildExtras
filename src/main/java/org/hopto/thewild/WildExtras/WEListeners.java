@@ -27,10 +27,12 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -366,6 +368,23 @@ public class WEListeners implements Listener {
             //piggie.setAngry(false); // Take a chill pill, piggie dude.
             //piggie.setAnger(0);  // similar.
             piggie.remove();
+        }
+    }
+
+    // Prevent teleportation that isn't a result of portals/commands - this
+    // should block the TP after eating a chorus fruit
+    @EventHandler
+    public void onPlayerEat (PlayerItemConsumeEvent e) {
+        if (e.getItem().getType() == Material.CHORUS_FRUIT) {
+            e.setCancelled(true);
+            debugmsg(
+                "Stopped chorus fruit consumption by "
+                + e.getPlayer().getName()
+            );
+        } else {
+            debugmsg(
+                "Non chorus fruit eating detected, that's fine"
+            );
         }
     }
     
