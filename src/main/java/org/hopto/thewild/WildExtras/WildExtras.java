@@ -142,13 +142,15 @@ public final class WildExtras extends JavaPlugin {
 				                        //request teleport
 				                        moderator.teleport(player);
 				                        //clear inventory
-				                        moderator.getInventory().clear();
+				                        //moderator.getInventory().clear();
 				                        //set to saved visit inventory
-				                        moderator.getInventory().setContents(inv1.getContents());
-				                        moderator.updateInventory();
+				                        //moderator.getInventory().setContents(inv1.getContents());
+				                        //moderator.updateInventory();
 				                        moderator.setGameMode(GameMode.ADVENTURE);
 				                        moderator.sendMessage("Visiting " + pname);
-				                        player.sendMessage("Moderator [" + moderatorName + "] is here." );
+				                        player.sendMessage(
+                                                            "Moderator [" + moderatorName + "] appears in a puff of smoke to visit you"
+                                                        );
 				                        return true;
 				                        
 				                    } catch (FileNotFoundException e) {
@@ -296,12 +298,12 @@ public final class WildExtras extends JavaPlugin {
 					                        playerData.load(f);
 					                        String newlocation = playerData.getString("location");
 					                        String newinventory = playerData.getString("inventory");   
-					                        Inventory inv1 = org.hopto.thewild.WildExtras.InventoryConvert.StringToInventory(newinventory);
+					                        //Inventory inv1 = org.hopto.thewild.WildExtras.InventoryConvert.StringToInventory(newinventory);
 					                        Location loc1 = org.hopto.thewild.WildExtras.LocationStringer.fromString(newlocation);
 					                        player.teleport(loc1);
-					                        player.getInventory().clear();
-					                        player.getInventory().setContents(inv1.getContents());
-					                        player.updateInventory();
+					                        //player.getInventory().clear();
+					                        //player.getInventory().setContents(inv1.getContents());
+					                        //player.updateInventory();
 					                        player.setGameMode(GameMode.SURVIVAL);
 					                        f.delete();
 					                        player.sendMessage("Visit Ended");
