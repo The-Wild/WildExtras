@@ -133,7 +133,7 @@ public final class WildExtras extends JavaPlugin {
 								File visitFile = new File(userdata, File.separator + "visit-inventory.yml");
 								FileConfiguration visitInv = YamlConfiguration.loadConfiguration(visitFile); 
 								String visitInventory = visitInv.getString("inventory");
-								Inventory inv1 = org.hopto.thewild.WildExtras.InventoryConvert.StringToInventory(visitInventory);
+								//Inventory inv1 = org.hopto.thewild.WildExtras.InventoryConvert.StringToInventory(visitInventory);
 			                      
 				                        playerData.load(f);
 				                        playerData.set("location", savedLocation);
