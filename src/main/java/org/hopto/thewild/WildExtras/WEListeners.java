@@ -394,7 +394,7 @@ public class WEListeners implements Listener {
     @EventHandler
     public void noPickup(PlayerPickupItemEvent e){
         Player player = e.getPlayer();
-        if (isVisiting(player) || player.getName().contains("old")) {
+        if (isVisiting(player) || player.getWorld.getName().contains("old")) {
             if (e.isCancelled()) {
                 return;
             } else {
