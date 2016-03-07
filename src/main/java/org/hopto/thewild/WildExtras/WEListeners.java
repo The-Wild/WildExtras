@@ -373,7 +373,7 @@ public class WEListeners implements Listener {
 
     // Prevent teleportation that isn't a result of portals/commands - this
     // should block the TP after eating a chorus fruit
-    @EventHandler
+   /* @EventHandler
     public void onPlayerEat (PlayerItemConsumeEvent e) {
         if (e.getItem().getType() == Material.CHORUS_FRUIT) {
             e.setCancelled(true);
@@ -388,7 +388,7 @@ public class WEListeners implements Listener {
         }
     }
     
-    
+    */
     
     //prevent block pickup by moderators visiting. - need to add stop chest / enderchest open. Also need to stop damage.
     @EventHandler
