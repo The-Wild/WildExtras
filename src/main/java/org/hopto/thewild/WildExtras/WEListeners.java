@@ -110,8 +110,18 @@ public class WEListeners implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent ev){ // block break event - or is it?
 	    if	(ev.getBlock().getWorld().getName().contains("old")){
-            ev.setCancelled(true);
-            }
+                debugmsg("Stopping block placement by "
+                        + ev.getPlayer().getName() + " in old world");
+                ev.setCancelled(true);
+            } else {
+                // For debugging block placement issues
+                debugmsg("Attempt to place block type "
+                        + ev.getBlockPlaced().getType() + " by "
+                        + ev.getPlayer().getName() + " at "
+                        + ev.getBlockPlaced().getLocation()
+                        + " - cancelled: " + ev.isCancelled()
+                );
+            }               
     }
     
     
