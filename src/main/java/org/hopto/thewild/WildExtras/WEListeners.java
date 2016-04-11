@@ -84,10 +84,8 @@ public class WEListeners implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
     	HumanEntity human =  event.getView().getPlayer();
-	    if(human instanceof Player) {
-	    	if (event.getCurrentItem().getType() == Material.ELYTRA) {
-	    		human.getInventory().remove(Material.ELYTRA);
-	    	}
+	    if(human instanceof Player)
+	    {
 	        Player player = (Player)human;
 	        if (player.getWorld().getName().contains("old")) {
 		      Inventory inv = event.getInventory();
@@ -420,7 +418,6 @@ public class WEListeners implements Listener {
     public void joinEvent(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         String playername = player.getName();
-    	player.getInventory().remove(Material.ELYTRA);
         File playerfile = new File("plugins/WildExtras/"+playername);
         if (!playerfile.exists()) {
             debugmsg("New player never seen before!");
