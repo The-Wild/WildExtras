@@ -144,9 +144,10 @@ public final class WildExtras extends JavaPlugin {
 				                        //clear inventory
 				                        moderator.getInventory().clear();
 				                        //set to saved visit inventory
-				                        moderator.getInventory().setContents(inv1.getContents());
-				                        moderator.updateInventory();
 				                        moderator.setGameMode(GameMode.ADVENTURE);
+				                        //update due to gamemode seperated invetories
+				                        moderator.getInventory().setContents(inv1.getContents());
+				                        moderator.updateInventory();				                        
 				                        moderator.sendMessage("Visiting " + pname);
 				                        player.sendMessage(
                                                             "Moderator [" + moderatorName + "] appears in a puff of smoke to visit you"
@@ -255,10 +256,11 @@ public final class WildExtras extends JavaPlugin {
 					player.sendMessage("Player Not Found");
 					return true;
 				}
-					else if (targetPlayer == player) {
+				/*	else if (targetPlayer == player) {
 						player.sendMessage("Dummy!");
 					return true; 
-				}   else if(f.exists()){
+					
+				} */  else if(f.exists()){
 					player.sendMessage("You are already visiting - use /endvisit");		
 					return true;
 				}
@@ -301,10 +303,15 @@ public final class WildExtras extends JavaPlugin {
 					                        Inventory inv1 = org.hopto.thewild.WildExtras.InventoryConvert.StringToInventory(newinventory);
 					                        Location loc1 = org.hopto.thewild.WildExtras.LocationStringer.fromString(newlocation);
 					                        player.teleport(loc1);
-					                        player.getInventory().clear();
+					                        //do not remove armor!
+					                        int clearSize = player.getInventory().getSize() - 5;
+					                        for(int i = 0; i < clearSize; i++) {
+					                            player.getInventory().clear(i);
+					                        }
+					                        player.setGameMode(GameMode.SURVIVAL);
+					                        //update due to separated inventories
 					                        player.getInventory().setContents(inv1.getContents());
 					                        player.updateInventory();
-					                        player.setGameMode(GameMode.SURVIVAL);
 					                        f.delete();
 					                        player.sendMessage("Visit Ended");
 					                        return true;

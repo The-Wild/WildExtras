@@ -13,7 +13,8 @@ import org.bukkit.inventory.ItemStack;
 public class InventoryConvert {
     public static String InventoryToString (Inventory invInventory)
     {
-        String serialization = invInventory.getSize() + ";";
+    	// remove5 to take into account armour slots being returned now. - ignore these!
+        String serialization = invInventory.getSize()-5 + ";";
         for (int i = 0; i < invInventory.getSize(); i++)
         {
             ItemStack is = invInventory.getItem(i);
