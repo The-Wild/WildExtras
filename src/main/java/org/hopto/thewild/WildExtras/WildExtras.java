@@ -118,6 +118,11 @@ public final class WildExtras extends JavaPlugin {
 			VisitMap.remove(pname);	
 				//save location & inventory to file
 				String savedLocation = org.hopto.thewild.WildExtras.LocationStringer.toString(moderator.getPlayer().getLocation());
+				
+				//extra logging and saving inventory to string
+				moderator.getPlayer().getInventory().getSize();
+				getLogger().info("Inventory Size: " + moderator.getPlayer().getInventory().getSize());
+				getLogger().info("Saving inventory to string");
 				String savedInventory = org.hopto.thewild.WildExtras.InventoryConvert.InventoryToString(moderator.getPlayer().getInventory());
 				File userdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "UserData");
 				File f = new File(userdata, File.separator + moderatorName + "-visit.yml");
