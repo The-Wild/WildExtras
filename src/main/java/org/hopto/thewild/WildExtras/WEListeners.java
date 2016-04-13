@@ -2,7 +2,9 @@ package org.hopto.thewild.WildExtras;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -39,6 +41,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import nl.lolmewn.stats.api.StatsAPI;
+import nl.lolmewn.stats.api.stat.Stat;
+import nl.lolmewn.stats.api.stat.StatEntry;
+import nl.lolmewn.stats.api.user.StatsHolder;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
@@ -341,7 +347,15 @@ public class WEListeners implements Listener {
             debugmsg("isNewbie bailing, stats API unavailable");
             return false;
         }
-        double playtime_secs = statsAPI.getPlaytime(player.getName());
+        //new fun for Stats3API
+        StatsHolder playerStats = statsAPI.getPlayer(player.getUniqueId());
+        Stat playtime = statsAPI.getStatManager().getStat("Playtime");
+        Collection<StatEntry> data = playerStats.getStats(playtime);
+        double playtime_secs = 0;
+        for (StatEntry perWorldStat : data) {
+        	playtime_secs = playtime_secs + perWorldStat.getValue();
+        }
+        //end of new fun
         debugmsg("is_newbie for " + player.getName()
             + " found play time " + playtime_secs);
         boolean isNewbie =  (playtime_secs < 60 * 60 * 4);
@@ -512,7 +526,7 @@ private boolean setupStatsAPI(){
     if (statsAPI != null) {
         return true;
     }
-
+    
     RegisteredServiceProvider<StatsAPI> stats 
         = Bukkit.getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
     

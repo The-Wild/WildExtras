@@ -1,6 +1,6 @@
 name: WildExtras
 main: org.hopto.thewild.WildExtras.WildExtras
-version: 0.5
+version: 1.0.0
 depends: [CraftIRC, Essentials, dynmap, Stats, GroupManager]
 commands:
    wedebug:

@@ -3,7 +3,7 @@
 <modelVersion>4.0.0</modelVersion>
   <groupId>org.bukkit</groupId>
    <name>WildExtras</name>
-   <version>0.5</version>
+   <version>1.0.0</version>
      <artifactId>WildExtras</artifactId>
   <packaging>jar</packaging>
   <url>http://the-wild.hopto.org</url>
@@ -79,7 +79,7 @@
      <dependency>
         <groupId>nl.lolmewn.stats</groupId>
         <artifactId>Stats</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.2</version>
         <scope>provided</scope>
         <type>jar</type>
     </dependency>
