@@ -345,47 +345,46 @@ public final class WildExtras extends JavaPlugin {
 		 		   //no perms - no message
 		 		} 
 					
-        } else if(cmd.getName().equalsIgnoreCase("chunkentitycounts")){
+        } else if (cmd.getName().equalsIgnoreCase("chunkentitycounts")) {
 
             HashMap<String,Integer> chunkEntityCounts = new HashMap<String,Integer>();
             HashMap<String,String> playersInChunk = new HashMap<String,String>();
-            // TODO: support specifying world to look at
-            World world = Bukkit.getServer().getWorlds().get(0);
-            for (Chunk chunk : world.getLoadedChunks()) {
-                int entities = chunk.getEntities().length;
-                String chunkLoc = chunk.getWorld().getName() + ":" 
-                    + chunk.getX()*16 + "," + chunk.getZ()*16;
-                chunkEntityCounts.put(chunkLoc, entities);
+            for (World world : Bukkit.getServer().getWorlds()) {
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    int entities = chunk.getEntities().length;
+                    String chunkLoc = chunk.getWorld().getName() + ":" 
+                        + chunk.getX()*16 + "," + chunk.getZ()*16;
+                    chunkEntityCounts.put(chunkLoc, entities);
 
-                // For every entity in the chunk, if it's a player, record them
-                // too
-                ArrayList<String> playerNames = new ArrayList<String>();
-                for (Entity entity : chunk.getEntities()) {
-                    if (entity instanceof Player) {
-                        playerNames.add(entity.getName());
+                    // For every entity in the chunk, if it's a player, record them
+                    // too
+                    ArrayList<String> playerNames = new ArrayList<String>();
+                    for (Entity entity : chunk.getEntities()) {
+                        if (entity instanceof Player) {
+                            playerNames.add(entity.getName());
+                        }
                     }
+                    
+                    //playersInChunk.put(chunkLoc, String.join(',', playerNames));
+                    playersInChunk.put(chunkLoc, playerNames.toString());
                 }
-                
-                //playersInChunk.put(chunkLoc, String.join(',', playerNames));
-                playersInChunk.put(chunkLoc, playerNames.toString());
-            }
 
-            Map<String,Integer> sortedmap = sortByValues(chunkEntityCounts);
-            Set set = sortedmap.entrySet();
-            Iterator iterator = set.iterator();
-            int chunksSent = 0;
-            while (iterator.hasNext() && chunksSent < 8) {
-                Map.Entry chunk = (Map.Entry)iterator.next();
-                String chunkLoc = (String) chunk.getKey();
-                Integer entityCount = (Integer) chunk.getValue();
-                String players = playersInChunk.get(chunkLoc);
-                sender.sendMessage(
-                    chunkLoc + ": " + entityCount + " entities, players: "
-                    + players
-                );
-                chunksSent++;
+                Map<String,Integer> sortedmap = sortByValues(chunkEntityCounts);
+                Set set = sortedmap.entrySet();
+                Iterator iterator = set.iterator();
+                int chunksSent = 0;
+                while (iterator.hasNext() && chunksSent < 12) {
+                    Map.Entry chunk = (Map.Entry)iterator.next();
+                    String chunkLoc = (String) chunk.getKey();
+                    Integer entityCount = (Integer) chunk.getValue();
+                    String players = playersInChunk.get(chunkLoc);
+                    sender.sendMessage(
+                        chunkLoc + ": " + entityCount + " entities, players: "
+                        + players
+                    );
+                    chunksSent++;
+                }
             }
-
             
         } else if(cmd.getName().equalsIgnoreCase("chunkentities")){
             if (!(sender instanceof Player)) {
