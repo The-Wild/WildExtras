@@ -380,24 +380,24 @@ public final class WildExtras extends JavaPlugin {
                     //playersInChunk.put(chunkLoc, String.join(',', playerNames));
                     playersInChunk.put(chunkLoc, playerNames.toString());
                 }
-
-                Map<String,Integer> sortedmap = sortByValues(chunkEntityCounts);
-                Set set = sortedmap.entrySet();
-                Iterator iterator = set.iterator();
-                int chunksSent = 0;
-                while (iterator.hasNext() && chunksSent < 12) {
-                    Map.Entry chunk = (Map.Entry)iterator.next();
-                    String chunkLoc = (String) chunk.getKey();
-                    Integer entityCount = (Integer) chunk.getValue();
-                    String players = playersInChunk.get(chunkLoc);
-                    sender.sendMessage(
-                        chunkLoc + ": " + entityCount + " entities, players: "
-                        + players
-                    );
-                    chunksSent++;
-                }
             }
-            
+
+            Map<String,Integer> sortedmap = sortByValues(chunkEntityCounts);
+            Set set = sortedmap.entrySet();
+            Iterator iterator = set.iterator();
+            int chunksSent = 0;
+            while (iterator.hasNext() && chunksSent < 12) {
+                Map.Entry chunk = (Map.Entry)iterator.next();
+                String chunkLoc = (String) chunk.getKey();
+                Integer entityCount = (Integer) chunk.getValue();
+                String players = playersInChunk.get(chunkLoc);
+                sender.sendMessage(
+                    chunkLoc + ": " + entityCount + " entities, players: "
+                    + players
+                );
+                chunksSent++;
+            }
+        
         } else if(cmd.getName().equalsIgnoreCase("chunkentities")){
             if (!(sender instanceof Player)) {
                 sender.sendMessage("Must be used in-game by a player");
