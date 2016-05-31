@@ -344,6 +344,18 @@ public final class WildExtras extends JavaPlugin {
 				}else{
 		 		   //no perms - no message
 		 		} 
+        } else if (cmd.getName().equalsIgnoreCase("playerlocations")) {
+            for (World world : Bukkit.getServer().getWorlds()) {
+                for (Player player : world.getPlayers()) {
+                    Location loc = player.getLocation();
+                    sender.sendMessage(
+                        player.getName() + " is at " + 
+                        loc.getBlockX() + ',' + loc.getBlockY() + ',' + loc.getBlockZ()
+                        + " in world " + loc.getWorld().getName()
+                    );
+                }
+            }
+                    
 					
         } else if (cmd.getName().equalsIgnoreCase("chunkentitycounts")) {
 

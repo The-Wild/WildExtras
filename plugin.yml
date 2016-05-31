@@ -51,6 +51,12 @@ commands:
       usage: /chunkentities
       permission: wildextras.chunkentities
       permission-message: You can't do that!
+   playerlocations:
+      description: Mod only - where is everyone?
+      usage: /playerlocations
+      permission: wildextras.playerlocations
+      permission-message: You can't do that!
+
 permissions:
     wildextras.*:
         description: Gives access to all wildextras commands
