@@ -496,7 +496,7 @@ public class WEListeners implements Listener {
             } else if (group.equals("PlayerMod")) {
                 color = ChatColor.GRAY;
             } else if (group.equals("Admin")) {
-                color = ChatColor.DARK_GREEN;
+                color = ChatColor.GREEN;
             } else {
                 color = ChatColor.YELLOW;
             }
