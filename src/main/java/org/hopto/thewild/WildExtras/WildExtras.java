@@ -79,6 +79,7 @@ public final class WildExtras extends JavaPlugin {
 	public boolean debug;
 	public HashMap<String, String> VisitMap = new HashMap<String, String>();
 	//Command Listener
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 
 		//Arrow Clear Command
@@ -446,6 +447,7 @@ public final class WildExtras extends JavaPlugin {
     // Is this really what you have to do in order to sort a hashmap by value in
     // Java? I find this horrible!
     // This is from http://beginnersbook.com/2013/12/how-to-sort-hashmap-in-java-by-keys-and-values/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
       private static HashMap sortByValues(HashMap map) { 
        List list = new LinkedList(map.entrySet());
        // Defined Custom Comparator here
