@@ -131,7 +131,7 @@ public final class WildExtras extends JavaPlugin {
 				                        //set to saved visit inventory
 				                        moderator.setGameMode(GameMode.ADVENTURE);
 				                        //update due to gamemode separated inventories
-				                        moderator.setMaxHealth(moderator.getMaxHealth()); // <- update health after setting game mode.
+				                        moderator.setHealth(moderator.getMaxHealth()); // <- update health after setting game mode.
 				                        moderator.getInventory().setContents(inv1.getContents());
 				                        moderator.updateInventory();				                        
 				                        moderator.sendMessage("Visiting " + pname);
