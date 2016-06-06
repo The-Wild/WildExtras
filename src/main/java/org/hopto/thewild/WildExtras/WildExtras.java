@@ -2,7 +2,6 @@ package org.hopto.thewild.WildExtras;
 
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,16 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.*;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -34,24 +29,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.hopto.thewild.WildExtras.InventoryConvert;
-import org.hopto.thewild.WildExtras.LocationStringer;
-import org.hopto.thewild.WildExtras.IRCAPI;
 
-import com.earth2me.essentials.Essentials;
-import com.ensifera.animosity.craftirc.CraftIRC;
-import com.ensifera.animosity.craftirc.EndPoint;
-import com.ensifera.animosity.craftirc.RelayedMessage;
-import com.ensifera.animosity.craftirc.CraftIRC;
-import com.ensifera.animosity.craftirc.EndPoint;
-import com.ensifera.animosity.craftirc.RelayedMessage;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 
 

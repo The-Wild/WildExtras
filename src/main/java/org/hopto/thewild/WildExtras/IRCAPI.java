@@ -2,13 +2,13 @@ package org.hopto.thewild.WildExtras;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
+
 import org.bukkit.plugin.Plugin;
 
 import com.ensifera.animosity.craftirc.CraftIRC;
 import com.ensifera.animosity.craftirc.EndPoint;
 import com.ensifera.animosity.craftirc.RelayedMessage;
-import com.ensifera.animosity.craftirc.EndPoint.Type;
+
 
 	public class IRCAPI  implements EndPoint {
 	    private final String exampletag = "WildExtras";

@@ -9,8 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import lombok.extern.java.Log;
  
 public class InventoryConvert {
     public static String InventoryToString (Inventory invInventory)
