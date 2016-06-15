@@ -19,8 +19,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
@@ -170,19 +172,172 @@ public class WEListeners implements Listener {
 
     
     
+    //Add interface for combustion + damage = AnyDamage 
+    interface IAnyDamageEvent {
+    	Player getEntity();
+        void setCancelled(boolean cancel);
+        void setDamage(double damage);
+    }
     
+    @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
+    public void onDamage(EntityDamageEvent event) {
+    	IAnyDamageEvent e = (IAnyDamageEvent) event;
+    	onAnyDamage(e);
+    }
+    @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
+    public void onCombust(EntityCombustEvent event) {
+    	IAnyDamageEvent e = (IAnyDamageEvent) event;
+    	onAnyDamage(e);
+    }    
+
+    void onAnyDamage(IAnyDamageEvent event) {
+    	 // If it's not a player being damaged, we don't care.
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        
+
+        final Player victim = (Player)event.getEntity();
+        // If the victim is in visit mode, they're immune to all damage, so nerf
+        // it and go no further if so:
+        if (isVisiting(victim)) {
+            debugmsg(event + " damage to " + victim.getName()
+                    + " blocked due to visit mode");
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
+
+        // Work out who/what the attacker is.  How we do this differs depending
+        // on the type of damage - direct attack or projectile.
+        Entity attacker = null;
+
+        if (event instanceof EntityDamageByEntityEvent) {
+            attacker = ((EntityDamageByEntityEvent)event).getDamager();
+            debugmsg("attacker class " + attacker.getClass());
+            if (((EntityDamageByEntityEvent)event).getDamager() instanceof Arrow) {
+                debugmsg("damager was instanceof Arrow");
+                Arrow arrow = (Arrow) ((EntityDamageByEntityEvent)event).getDamager();
+                if (arrow.getShooter() instanceof Player) {
+                    attacker = (Player) arrow.getShooter();
+                    debugmsg(
+                        victim.getName() + " hit by arrow from "
+                        + attacker.getName()
+                    );
+                } else {
+                    debugmsg("Arrow fired by non-player " + attacker);
+                }
+            }
+        } else {
+            debugmsg("Unknown damage source " + event);
+        }
+
+        if (attacker == null) {
+            debugmsg("Failed to determine attacker, allow damage");
+            return;
+        }
+
+        // Remainder of checks concern player-to-player damage, so if we
+        // determined it's non-player-caused, ignore.
+            
+        if (!(attacker instanceof Player)) {
+            debugmsg("Damage from non-player " + attacker);
+            return;
+        }
+
+        debugmsg("Handling damage on " + victim + " named "
+                + victim.getName() + " from " + attacker);
+
+        // If the player is being show with a bow, though, the "damager" will be
+        // an arrow, and we need to find out who fired that arrow:
+        if (event.getEntity() instanceof Arrow) {
+            debugmsg(
+                    victim.getName() + " got shot with an arrow"
+            );
+            Arrow arrow = (Arrow) event.getEntity();
+            if (arrow.getShooter() instanceof Player) {
+                attacker = (Player) arrow.getShooter();
+                debugmsg(
+                        "Shooter was " + attacker.getName()
+                );
+            } else {
+                debugmsg(
+                        "Shooter was not a player though"
+                );
+            }
+        }
+
+        // If the victim is a visiting pmod they should be immune to all damage,
+        // or if the attacker is a visiting pmod they shouldn't be able to
+        // damage other players, so if either is the case shortcut here
+        if (isVisiting(victim) || isVisiting(attacker)) {
+            debugmsg("Victim or attacker is visiting, damage blocked"); 
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
+
+        // The remaining damage exemptions all only apply to PvP damage, so if
+        // the attacker isn't a player, we don't care:
+        if (!(attacker instanceof Player)) {
+            return;
+        }
+
+        // Right, so we're going to nerf the damage - in some cases we want
+        // to explain why - but only try to explain if the killer is a player
+        boolean allowDamage = true;
+        if (isProtected(victim)) {
+            debugmsg("Protected player can't be attacked");
+            attacker.sendMessage(victim.getName() + " is PvP protected. Leave them alone!");
+            allowDamage = false;
+        } else if (isProtected(attacker)) {
+            debugmsg("Protected player can't attack others");
+            attacker.sendMessage("You are PvP protected. Type /pvpon to disable");
+            allowDamage = false;
+        } else if (isNewbie(victim)) {
+            debugmsg("Newbie protected from attack");
+            attacker.sendMessage(victim.getName() + " is a newbie, leave them alone!");
+            allowDamage = false;
+        } else if (isNewbie(attacker)) {
+            debugmsg("Newbie can't attack others yet");
+            attacker.sendMessage(
+                "You are still PvP protected as a new player, and thus cannot attack others yet"
+            );
+            allowDamage = false;
+        }
+
+        if (!allowDamage) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            debugmsg(
+                "Preventing damage to " + victim.getName() 
+                + " by " + attacker.getName()
+            );
+        }
+        return;
+    }    
     
+    /*
     //prevent pvp damage on visits - and on pvp protect because of spam kills - also prevent protected person from pvping.
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
-    public void onDamage(final EntityDamageEvent event) {
+    public void onDamage(final EntityEvent e) {
         // If it's not a player being damaged, we don't care.
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
+        
+        if(e instanceof EntityDamageEvent) {
+        	
+        } else if(e instanceof EntityCombustEvent) {
+        	
+        }
 
         final Player victim = (Player)event.getEntity();
-
-
+        if () {
+        IAnyDamageEvent event = (IAnyDamageEvent) e;
+        } else {
+        IAnyDamageEvent event = (IAnyDamageEvent) e;
+        }
         // If the victim is in visit mode, they're immune to all damage, so nerf
         // it and go no further if so:
         if (isVisiting(victim)) {
@@ -301,6 +456,7 @@ public class WEListeners implements Listener {
         }
         return;
     }
+    */
 
     private boolean isProtected(final Entity player) {
         File userdata = new File(
