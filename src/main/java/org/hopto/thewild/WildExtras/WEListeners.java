@@ -13,6 +13,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -213,17 +214,17 @@ public class WEListeners implements Listener {
         if (attacker != null) {
 
             debugmsg("attacker class " + attacker.getClass());
-            if (attacker instanceof Arrow) {
-                debugmsg("damager was instanceof Arrow");
-                Arrow arrow = (Arrow) attacker;
-                if (arrow.getShooter() instanceof Player) {
-                    attacker = (Player) arrow.getShooter();
+            if (attacker instanceof Projectile) {
+                debugmsg("damager was a projectile");
+                Projectile projectile = (Projectile) attacker;
+                if (projectile.getShooter() instanceof Player) {
+                    attacker = (Player) projectile.getShooter();
                     debugmsg(
-                        victim.getName() + " hit by arrow from "
+                        victim.getName() + " hit by projectile from "
                         + attacker.getName()
                     );
                 } else {
-                    debugmsg("Arrow fired by non-player " + attacker);
+                    debugmsg("Projectile fired by non-player " + attacker);
                 }
             }
         } else {
