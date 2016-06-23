@@ -19,9 +19,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
@@ -171,25 +172,17 @@ public class WEListeners implements Listener {
 
     
     
-    //Add interface for combustion + damage = AnyDamage 
-    interface IAnyDamageEvent {
-    	Player getEntity();
-        void setCancelled(boolean cancel);
-        void setDamage(double damage);
-    }
     
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
     public void onDamage(EntityDamageEvent event) {
-    	IAnyDamageEvent e = (IAnyDamageEvent) event;
-    	onAnyDamage(e);
+    	onAnyDamage(event);
     }
     @EventHandler(priority=EventPriority.HIGH,ignoreCancelled=true) 
-    public void onCombust(EntityCombustEvent event) {
-    	IAnyDamageEvent e = (IAnyDamageEvent) event;
-    	onAnyDamage(e);
+    public void onCombust(EntityCombustByEntityEvent event) {
+    	onAnyDamage(event);
     }    
 
-    void onAnyDamage(IAnyDamageEvent event) {
+    void onAnyDamage(EntityEvent event) {
     	 // If it's not a player being damaged, we don't care.
         if (!(event.getEntity() instanceof Player)) {
             return;
@@ -202,21 +195,27 @@ public class WEListeners implements Listener {
         if (isVisiting(victim)) {
             debugmsg(event + " damage to " + victim.getName()
                     + " blocked due to visit mode");
-            event.setCancelled(true);
-            event.setDamage(0);
+            cancelDamage(event);
             return;
         }
 
         // Work out who/what the attacker is.  How we do this differs depending
-        // on the type of damage - direct attack or projectile.
+        // on whether it's a damage or combustion event, and whether it's direct
+        // damage or projectile damage.
         Entity attacker = null;
 
         if (event instanceof EntityDamageByEntityEvent) {
             attacker = ((EntityDamageByEntityEvent)event).getDamager();
+        } else if (event instanceof EntityCombustByEntityEvent) {
+            attacker = ((EntityCombustByEntityEvent)event).getCombuster();
+        }
+
+        if (attacker != null) {
+
             debugmsg("attacker class " + attacker.getClass());
-            if (((EntityDamageByEntityEvent)event).getDamager() instanceof Arrow) {
+            if (attacker instanceof Arrow) {
                 debugmsg("damager was instanceof Arrow");
-                Arrow arrow = (Arrow) ((EntityDamageByEntityEvent)event).getDamager();
+                Arrow arrow = (Arrow) attacker;
                 if (arrow.getShooter() instanceof Player) {
                     attacker = (Player) arrow.getShooter();
                     debugmsg(
@@ -228,13 +227,13 @@ public class WEListeners implements Listener {
                 }
             }
         } else {
-            debugmsg("Unknown damage source " + event);
-        }
-
-        if (attacker == null) {
-            debugmsg("Failed to determine attacker, allow damage");
+            debugmsg(
+                "Unknown damage source/failed to determine attacker for " 
+                + event
+            );
             return;
         }
+
 
         // Remainder of checks concern player-to-player damage, so if we
         // determined it's non-player-caused, ignore.
@@ -247,32 +246,12 @@ public class WEListeners implements Listener {
         debugmsg("Handling damage on " + victim + " named "
                 + victim.getName() + " from " + attacker);
 
-        // If the player is being show with a bow, though, the "damager" will be
-        // an arrow, and we need to find out who fired that arrow:
-        if (event.getEntity() instanceof Arrow) {
-            debugmsg(
-                    victim.getName() + " got shot with an arrow"
-            );
-            Arrow arrow = (Arrow) event.getEntity();
-            if (arrow.getShooter() instanceof Player) {
-                attacker = (Player) arrow.getShooter();
-                debugmsg(
-                        "Shooter was " + attacker.getName()
-                );
-            } else {
-                debugmsg(
-                        "Shooter was not a player though"
-                );
-            }
-        }
-
         // If the victim is a visiting pmod they should be immune to all damage,
         // or if the attacker is a visiting pmod they shouldn't be able to
         // damage other players, so if either is the case shortcut here
         if (isVisiting(victim) || isVisiting(attacker)) {
             debugmsg("Victim or attacker is visiting, damage blocked"); 
-            event.setCancelled(true);
-            event.setDamage(0);
+            cancelDamage(event);
             return;
         }
 
@@ -306,8 +285,7 @@ public class WEListeners implements Listener {
         }
 
         if (!allowDamage) {
-            event.setCancelled(true);
-            event.setDamage(0);
+            cancelDamage(event);
             debugmsg(
                 "Preventing damage to " + victim.getName() 
                 + " by " + attacker.getName()
@@ -315,6 +293,26 @@ public class WEListeners implements Listener {
         }
         return;
     }    
+
+    // Cancel the damage, if it's a type we know how to cancel.  Also remove the
+    // arrow that caused it, if there was one.
+    private void cancelDamage (EntityEvent event) {
+        if (event instanceof EntityDamageEvent) {
+            EntityDamageEvent damageEvent = (EntityDamageEvent)event;
+            damageEvent.setDamage(0);
+            damageEvent.setCancelled(true);
+        } else if (event instanceof EntityCombustByEntityEvent) {
+            EntityCombustByEntityEvent combustEvent = (EntityCombustByEntityEvent)event;
+            combustEvent.setCancelled(true);
+            if (combustEvent.getCombuster() instanceof Arrow) {
+                Arrow arrow = (Arrow) combustEvent.getCombuster();
+                arrow.remove();
+            }
+        } else {
+            debugmsg("Don't know how to cancel a " + event);
+        }
+    }
+
     
     /*
     //prevent pvp damage on visits - and on pvp protect because of spam kills - also prevent protected person from pvping.
