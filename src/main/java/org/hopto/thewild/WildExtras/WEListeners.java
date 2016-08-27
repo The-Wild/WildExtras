@@ -700,7 +700,7 @@ private boolean setupGroupManagerAPI() {
     if (GMplugin != null && GMplugin.isEnabled()) {
         groupManager = (GroupManager)GMplugin;
         debugmsg("Fetched GroupManager plugin");
-        return false;
+        return true;
     } else {
         debugmsg("Failed to obtain GroupManager plugin");
         return false;
