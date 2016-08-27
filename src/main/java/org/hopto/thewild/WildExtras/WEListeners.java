@@ -734,15 +734,7 @@ public void checkRailClicks(PlayerInteractEvent e) {
         // cart, let you get on with it
         if (e.getItem() != null) {
             Material itemType = e.getItem().getType();
-            if (   itemType == Material.RAILS 
-                || itemType == Material.POWERED_RAIL
-                || itemType == Material.DETECTOR_RAIL
-                || itemType == Material.MINECART
-                || itemType == Material.POWERED_MINECART
-                || itemType == Material.HOPPER_MINECART
-                || itemType == Material.STORAGE_MINECART
-            ) 
-            {
+            if (railsIgnoreItem(itemType)) {
                 debugmsg(
                     player.getName() + "clicks rail with " + itemType
                     + " - no auto-minecart"
@@ -750,6 +742,34 @@ public void checkRailClicks(PlayerInteractEvent e) {
                 return;
             }
         }
+
+        // OK, they didn't click with an item we ignore, but do they have such
+        // an item in their hand - if so, still ignore (holding a rail and
+        // clicking another rail doesn't count as clicking with it, for
+        // instance, because there's no action involved)
+        if (
+            (
+                player.getInventory().getItemInMainHand() != null &&
+                railsIgnoreItem(
+                    player.getInventory().getItemInMainHand().getType()
+                )
+            )
+            ||
+            (
+                player.getInventory().getItemInOffHand() != null &&
+                railsIgnoreItem(
+                    player.getInventory().getItemInOffHand().getType()
+                )
+            )
+        ) {
+            debugmsg(
+                player.getName() + " clicked while holding ignored item"
+                + " - no auto-minecart"
+            );
+            return;
+        }
+
+        
 
         // If the rail already has a minecart on it, don't put another there
         // TODO: how to check?  Take block coords, get chunk, iterate entities
@@ -768,6 +788,21 @@ public void checkRailClicks(PlayerInteractEvent e) {
         // then put the player into it
         cart.setPassenger(player);
         debugmsg("Created auto-minecart for " + player.getName());
+    }
+}
+
+private boolean railsIgnoreItem(Material itemType) {
+    if (   itemType == Material.RAILS 
+        || itemType == Material.POWERED_RAIL
+        || itemType == Material.DETECTOR_RAIL
+        || itemType == Material.MINECART
+        || itemType == Material.POWERED_MINECART
+        || itemType == Material.HOPPER_MINECART
+        || itemType == Material.STORAGE_MINECART
+    ) {
+       return true;
+    } else {
+       return false;
     }
 }
 
