@@ -722,8 +722,15 @@ if (debug) {
 @EventHandler
 public void checkRailClicks(PlayerInteractEvent e) {
     Player player = e.getPlayer();
-    if (e.getClickedBlock().getType() == Material.RAILS
-            || e.getClickedBlock().getType() == Material.POWERED_RAIL) {
+    if (
+            e.getClickedBlock() != null
+            &&
+            (
+                e.getClickedBlock().getType() == Material.RAILS ||
+                e.getClickedBlock().getType() == Material.POWERED_RAIL
+            )
+        )
+    {
         // If you're already in a minecart or other vehicle, do nothing (stops
         // people from warping ahead at silly speed and other tricks)
         if (player.isInsideVehicle()) {
