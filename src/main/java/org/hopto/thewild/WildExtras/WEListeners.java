@@ -36,6 +36,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.Location;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.Material;
@@ -773,6 +774,14 @@ public void checkRailClicks(PlayerInteractEvent e) {
                 player.getName() + " clicked while holding ignored item"
                 + " - no auto-minecart"
             );
+            return;
+        }
+
+        // OK, if the interaction used the main hand (left mouse button) they
+        // were probably trying to break the rail, not get into a cart
+        debugmsg("getHand said " + e.getHand());
+        if (e.getHand() == EquipmentSlot.HAND) {
+            debugmsg("Main hand used, ignore");
             return;
         }
 
