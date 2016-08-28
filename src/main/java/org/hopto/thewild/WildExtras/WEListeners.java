@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,9 +34,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.Location;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.Material;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -710,5 +715,115 @@ if (debug) {
     plugin.getLogger().info(message);
 }
 }
+
+
+
+
+@EventHandler
+public void checkRailClicks(PlayerInteractEvent e) {
+    Player player = e.getPlayer();
+    if (
+            e.getClickedBlock() != null
+            &&
+            (
+                e.getClickedBlock().getType() == Material.RAILS ||
+                e.getClickedBlock().getType() == Material.POWERED_RAIL
+            )
+        )
+    {
+        // If you're already in a minecart or other vehicle, do nothing (stops
+        // people from warping ahead at silly speed and other tricks)
+        if (player.isInsideVehicle()) {
+            return;
+        }
+        // If you have a rail in your hand, you're probably building tracks and
+        // mis-clicked, so do nothing; similarly, if you were trying to place a
+        // cart, let you get on with it
+        if (e.getItem() != null) {
+            Material itemType = e.getItem().getType();
+            if (railsIgnoreItem(itemType)) {
+                debugmsg(
+                    player.getName() + "clicks rail with " + itemType
+                    + " - no auto-minecart"
+                );
+                return;
+            }
+        }
+
+        // OK, they didn't click with an item we ignore, but do they have such
+        // an item in their hand - if so, still ignore (holding a rail and
+        // clicking another rail doesn't count as clicking with it, for
+        // instance, because there's no action involved)
+        if (
+            (
+                player.getInventory().getItemInMainHand() != null &&
+                railsIgnoreItem(
+                    player.getInventory().getItemInMainHand().getType()
+                )
+            )
+            ||
+            (
+                player.getInventory().getItemInOffHand() != null &&
+                railsIgnoreItem(
+                    player.getInventory().getItemInOffHand().getType()
+                )
+            )
+        ) {
+            debugmsg(
+                player.getName() + " clicked while holding ignored item"
+                + " - no auto-minecart"
+            );
+            return;
+        }
+
+        
+
+        // If the rail already has a minecart on it, don't put another there
+        // TODO: how to check?  Take block coords, get chunk, iterate entities
+        // looking for minecarts and comparing their distance to centre of that
+        // block?
+
+        // OK, place a minecart on the clicked rail
+        Minecart cart = e.getClickedBlock().getLocation().getWorld().spawn(
+            e.getClickedBlock().getLocation(),
+            Minecart.class
+        );
+    
+        // Remember it was automatically placed so we can kill it later
+        cart.setMetadata("autominecart", new FixedMetadataValue(plugin,true));
+        
+        // then put the player into it
+        cart.setPassenger(player);
+        debugmsg("Created auto-minecart for " + player.getName());
+    }
+}
+
+private boolean railsIgnoreItem(Material itemType) {
+    if (   itemType == Material.RAILS 
+        || itemType == Material.POWERED_RAIL
+        || itemType == Material.DETECTOR_RAIL
+        || itemType == Material.MINECART
+        || itemType == Material.POWERED_MINECART
+        || itemType == Material.HOPPER_MINECART
+        || itemType == Material.STORAGE_MINECART
+    ) {
+       return true;
+    } else {
+       return false;
+    }
+}
+
+@EventHandler
+public void checkVehicleDismount(VehicleExitEvent e) {
+    // If this was an auto-minecart, destroy it
+    Vehicle vehicle = e.getVehicle();
+    if (vehicle.hasMetadata("autominecart")) {
+        vehicle.remove();
+        debugmsg("Destroyed an auto-minecart");
+    }
+
+}
+
+
 
 }
