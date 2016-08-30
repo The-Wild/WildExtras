@@ -792,9 +792,21 @@ public void checkRailClicks(PlayerInteractEvent e) {
         // looking for minecarts and comparing their distance to centre of that
         // block?
 
+        // This nastyness is to get the block centre, to work around a silly
+        // Bukkit bug they won't fix
+        Location railLocation = e.getClickedBlock().getLocation();
+        double x = railLocation.getBlockX();
+        double z = railLocation.getBlockZ();
+        Location cartLocation = new Location(
+            railLocation.getWorld(),
+            x > 0 ? x + 0.5 : x - 0.5,
+            railLocation.getBlockY() + 0.25,
+            z > 0 ? z + 0.5 : z - 0.5
+        );
+
         // OK, place a minecart on the clicked rail
         Minecart cart = e.getClickedBlock().getLocation().getWorld().spawn(
-            e.getClickedBlock().getLocation(),
+            cartLocation,
             Minecart.class
         );
     
