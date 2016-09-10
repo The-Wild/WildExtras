@@ -203,23 +203,38 @@ public final class WildExtras extends JavaPlugin {
 				return true;
         } return false;
 		} else if(cmd.getName().equalsIgnoreCase("pvpon")){
+                        Player player;
+                        if (args.length == 1) {
+                            if (sender.hasPermission("wildextras.pvponothers")) {
+                                player = getServer().getPlayer(args[0]);
+                            } else {
+                                // TODO: report failure
+                                return false;
+                            }
+                        } else {
+                            player = (sender instanceof Player) ? (Player) sender: null;
+                        }
+
 			if(sender.hasPermission("wildextras.pvpon")) {
 		 		   //got perms
-				Player player = (sender instanceof Player) ? (Player) sender : null;
 				String pname = player.getName().toString();
 				File protecteduserdata = new File(Bukkit.getServer().getPluginManager().getPlugin("WildExtras").getDataFolder(), File.separator + "ProtectedUserData");
 				File f = new File(protecteduserdata, File.separator + pname + "-protected.yml");
 				if (f.exists()){
 				f.delete();
 				org.hopto.thewild.WildExtras.WEListeners.deathmap.remove(pname);
-				sender.sendMessage("You are no longer PvP Protected");
+                                if (args.length == 1) {
+                                    sender.sendMessage("Unprotected " + player.getName());
+                                } else {
+				    sender.sendMessage("You are no longer PvP Protected");
+                                }
                                 if (player != null) {
                                     weListeners.colorNick(player);
                                 }
 				return true;
 				} else {
-					sender.sendMessage("You are not PvP Protected");
-					return true;
+                                    sender.sendMessage("Already not PvP Protected");
+                                    return true;
 				}
         } return false;
 	} else if(cmd.getName().equalsIgnoreCase("visit")){
