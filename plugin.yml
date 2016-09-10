@@ -72,3 +72,6 @@ permissions:
     wildextras.makevisitinv:
         description: Create the visit inventory
         default: op
+    wildextras.pvponothers:
+        description: Disable spam-kill PvP protection on someone
+        default: op 
