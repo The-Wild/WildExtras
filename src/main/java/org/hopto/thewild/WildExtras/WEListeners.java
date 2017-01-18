@@ -31,6 +31,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -39,8 +40,10 @@ import org.bukkit.Location;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.Material;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -842,6 +845,30 @@ public void checkVehicleDismount(VehicleExitEvent e) {
     }
 
 }
+
+// Log edited books so we can see who left offensive stuff.
+@EventHandler
+public void logEditedBook(PlayerEditBookEvent e) {
+    Player player = e.getPlayer();
+    BookMeta meta = e.getNewBookMeta();
+    plugin.getLogger().info(
+        "Player " + player.getName() + " is editing a book titled '"
+        + meta.getTitle() + "', page contents follow"
+    );
+    for (String page: meta.getPages()) {
+        plugin.getLogger().info(page);
+    }
+
+    // Record them as the author;  Normally this is only done when the book is
+    // signed, but we don't want people to be able to use an unsigned book &
+    // quill to leave anonymous abusive messages in people's hoppers, etc.
+    meta.setAuthor(player.getName());
+    e.setNewBookMeta(meta);
+}
+
+//
+// PlayerEditBookEvent(Player who, int slot, BookMeta previousBookMeta, BookMeta
+// newBookMeta, boolean isSigning) 
 
 
 
