@@ -858,6 +858,12 @@ public void logEditedBook(PlayerEditBookEvent e) {
     for (String page: meta.getPages()) {
         plugin.getLogger().info(page);
     }
+
+    // Record them as the author;  Normally this is only done when the book is
+    // signed, but we don't want people to be able to use an unsigned book &
+    // quill to leave anonymous abusive messages in people's hoppers, etc.
+    meta.setAuthor(player.getName());
+    e.setNewBookMeta(meta);
 }
 
 //
