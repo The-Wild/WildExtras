@@ -584,7 +584,7 @@ public class WEListeners implements Listener {
     }	   
  
     //create a file for each user so that wildbot knows who to trust!
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void joinEvent(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         String playername = player.getName();
@@ -610,8 +610,8 @@ public class WEListeners implements Listener {
 
             // Welcome them, too
             event.getPlayer().sendMessage(
-                "Welcome aboard!  Please see the welcome guide "
-                + "http://the-wild.tk/welcome for helpful info!");
+                "Welcome aboard!  Please see the FAQ "
+                + "http://the-wild.tk/faq for helpful info!");
         }     
 
         // Annoyingly, isNewbie called here finds a play time of 0.0 - I'm
