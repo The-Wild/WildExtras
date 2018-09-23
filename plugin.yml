@@ -56,6 +56,9 @@ commands:
       usage: /playerlocations
       permission: wildextras.playerlocations
       permission-message: You can't do that!
+   mapme:
+      description: Gives map URL centred on your location
+      usage: /mapme
 
 permissions:
     wildextras.*:

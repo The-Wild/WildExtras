@@ -352,6 +352,16 @@ public final class WildExtras extends JavaPlugin {
                 }
             }
                     
+        } else if (cmd.getName().equalsIgnoreCase("mapme")) {
+            Player player = (sender instanceof Player) ? (Player) sender : null;
+            if (player != null) {
+                Location loc = player.getLocation();
+                sender.sendMessage(
+                    "http://the-wild.tk:8123/?x=" + loc.getBlockX()
+                    + "&y=" + loc.getBlockY() + "&z=" + loc.getBlockZ()
+                    + "&worldname=" + loc.getWorld().getName() + "&zoom=8"
+                );
+            }
 					
         } else if (cmd.getName().equalsIgnoreCase("chunkentitycounts")) {
 
