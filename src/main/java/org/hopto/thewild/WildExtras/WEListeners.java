@@ -271,6 +271,13 @@ public class WEListeners implements Listener {
             return;
         }
 
+        // Also, if the attacker is also the victim, no further checks needed 
+        // - this catches the damage from enderpearl teleports, and potentially
+        // other things (firing an arrow/trident into the air and getting hit?)
+        if (victim.getName.equals(attacker.getName())) {
+            return;
+        }
+
         // Right, so we're going to nerf the damage - in some cases we want
         // to explain why - but only try to explain if the killer is a player
         boolean allowDamage = true;
