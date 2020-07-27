@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.NamespacedKey;
  
 public class InventoryConvert {
     public static String InventoryToString (Inventory invInventory)
@@ -42,7 +43,7 @@ public class InventoryConvert {
                 {
                     for (Entry<Enchantment,Integer> ench : isEnch.entrySet())
                     {
-                        serializedItemStack += ":e@" + ench.getKey().getId() + "@" + ench.getValue();
+                        serializedItemStack += ":e@" + ench.getKey().toString() + "@" + ench.getValue();
                     }
                 }
                
@@ -77,7 +78,7 @@ public class InventoryConvert {
                 String[] itemAttribute = itemInfo.split("@");
                 if (itemAttribute[0].equals("t"))
                 {
-                    is = new ItemStack(Material.getMaterial(Integer.valueOf(itemAttribute[1])));
+                    is = new ItemStack(Material.getMaterial(itemAttribute[1]));
                     createdItemStack = true;
                 }
                 else if (itemAttribute[0].equals("d") && createdItemStack)
@@ -90,7 +91,14 @@ public class InventoryConvert {
                 }
                 else if (itemAttribute[0].equals("e") && createdItemStack)
                 {
-                    is.addEnchantment(Enchantment.getById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
+                    NamespacedKey key = new NamespacedKey(
+                        itemAttribute[1].substring(0, itemAttribute[1].indexOf(':')),
+                        itemAttribute[1].substring(itemAttribute[1].indexOf(':') + 1, itemAttribute[1].length())
+                    );
+                    is.addEnchantment(
+                        Enchantment.getByKey(key),
+                        Integer.valueOf(itemAttribute[2])
+                    );
                 }
             }
             deserializedInventory.setItem(stackPosition, is);

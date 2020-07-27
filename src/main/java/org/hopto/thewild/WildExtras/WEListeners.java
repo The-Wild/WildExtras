@@ -42,18 +42,14 @@ import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.Material;
+import org.bukkit.material.*;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import nl.lolmewn.stats.api.StatsAPI;
-import nl.lolmewn.stats.api.stat.Stat;
-import nl.lolmewn.stats.api.stat.StatEntry;
-import nl.lolmewn.stats.api.user.StatsHolder;
-
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
+//import org.anjocaido.groupmanager.GroupManager;
+//import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 
 public class WEListeners implements Listener {
     public Plugin plugin;
@@ -274,7 +270,7 @@ public class WEListeners implements Listener {
         // Also, if the attacker is also the victim, no further checks needed 
         // - this catches the damage from enderpearl teleports, and potentially
         // other things (firing an arrow/trident into the air and getting hit?)
-        if (victim.getName.equals(attacker.getName())) {
+        if (victim.getName().equals(attacker.getName())) {
             return;
         }
 
@@ -505,21 +501,14 @@ public class WEListeners implements Listener {
             }
         }
 
-        // OK, need to ask the Stats API, and cache the result:
-        if (!setupStatsAPI()) {
-            // Fail-safe if Stats API wasn't available for whatever reason
-            debugmsg("isNewbie bailing, stats API unavailable");
-            return false;
-        }
-        //new fun for Stats3API
-        StatsHolder playerStats = statsAPI.getPlayer(player.getUniqueId());
-        Stat playtime = statsAPI.getStatManager().getStat("Playtime");
-        Collection<StatEntry> data = playerStats.getStats(playtime);
-        double playtime_secs = 0;
-        for (StatEntry perWorldStat : data) {
-        	playtime_secs = playtime_secs + perWorldStat.getValue();
-        }
-        //end of new fun
+
+        // FIXME: removed code that used lolmewn's Stats API here
+        // Re-implement with vanilla stats or age of their player data file
+        // or something!
+        // Find their playtime as playtime_secs
+        debugmsg("is_newbie disabled until Dave can rewrite it");
+        return false;
+        /*
         debugmsg("is_newbie for " + player.getName()
             + " found play time " + playtime_secs);
         boolean isNewbie =  (playtime_secs < 60 * 60 * 4);
@@ -530,6 +519,7 @@ public class WEListeners implements Listener {
         debugmsg("Calculated isNewbie result " + isNewbie + " for "
                 + player.getName());
         return isNewbie;
+        */
     }
     
    
@@ -598,17 +588,7 @@ public class WEListeners implements Listener {
         File playerfile = new File("plugins/WildExtras/"+playername);
         if (!playerfile.exists()) {
             debugmsg("New player never seen before!");
-    		//Setup IRC API
-    		IRCAPI IRCAPI = new IRCAPI();
-    		//register the endpoint
-    		IRCAPI.setupAPI();
-    		//broadcast to game and IRC - Dont need this because game is already Messaged
-    		//IRCAPI.broadcastMessage("hi from WildExtras");
-    		//Send only to IRC
     		String myMessage = ChatColor.LIGHT_PURPLE + "Please welcome" + ChatColor.WHITE + " " + playername + ChatColor.LIGHT_PURPLE + " to The-Wild!!";
-    		IRCAPI.sendToIRC(myMessage);
-            //Disconnect endpoint from CraftIRC
-            IRCAPI.disableAPI();
             try {
                 playerfile.createNewFile();
             } catch (IOException e) {
@@ -649,6 +629,12 @@ public class WEListeners implements Listener {
                 color = ChatColor.LIGHT_PURPLE;
         } else if (isProtected(player)) {
                 color = ChatColor.DARK_RED;
+        } else {
+            color = ChatColor.YELLOW;
+        }
+        /* reinstate if I get GroupManager to work as a dep again?
+         * or just add a permission to each group named after it, so you
+         * could just say player.hasPermission('Admin') ? 
         } else if (setupGroupManagerAPI()) {
             String group = getPlayerGroup(player);
             debugmsg(
@@ -664,7 +650,7 @@ public class WEListeners implements Listener {
             } else {
                 color = ChatColor.YELLOW;
             }
-        }
+            */
 
         if (color != null) {
             player.setPlayerListName(color + player.getName() + ChatColor.RESET);
@@ -672,6 +658,7 @@ public class WEListeners implements Listener {
         }
     }
 
+/*
     public String getPlayerGroup(Player player) {
         final AnjoPermissionsHandler handler
             = groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -685,23 +672,7 @@ public class WEListeners implements Listener {
             
 
 
-private StatsAPI statsAPI;
 
-private boolean setupStatsAPI(){
-
-    if (statsAPI != null) {
-        return true;
-    }
-    
-    RegisteredServiceProvider<StatsAPI> stats 
-        = Bukkit.getServer().getServicesManager().getRegistration(nl.lolmewn.stats.api.StatsAPI.class);
-    
-    if (stats!= null) {
-        statsAPI = stats.getProvider();
-    }
-    debugmsg("setupStatsAPI() called, result " + statsAPI);
-    return (statsAPI != null);
-}
 
 private GroupManager groupManager;
 
@@ -717,7 +688,7 @@ private boolean setupGroupManagerAPI() {
         return false;
     }
 }
-
+*/
 private void debugmsg(String message) {
 	WildExtras WildExtras = org.hopto.thewild.WildExtras.WildExtras.plugin;
 	boolean debug = WildExtras.debug;
@@ -737,8 +708,8 @@ public void checkRailClicks(PlayerInteractEvent e) {
             e.getClickedBlock() != null
             &&
             (
-                e.getClickedBlock().getType() == Material.RAILS ||
-                e.getClickedBlock().getType() == Material.POWERED_RAIL
+                e.getClickedBlock().getBlockData().getMaterial() == Material.RAIL ||
+                e.getClickedBlock().getBlockData().getMaterial() == Material.POWERED_RAIL
             )
         )
     {
@@ -828,13 +799,16 @@ public void checkRailClicks(PlayerInteractEvent e) {
 }
 
 private boolean railsIgnoreItem(Material itemType) {
-    if (   itemType == Material.RAILS 
+    if (   itemType == Material.RAIL 
         || itemType == Material.POWERED_RAIL
         || itemType == Material.DETECTOR_RAIL
         || itemType == Material.MINECART
+        /*
+         FIXME: what to do with these?  They're deprecated it seems?
         || itemType == Material.POWERED_MINECART
         || itemType == Material.HOPPER_MINECART
         || itemType == Material.STORAGE_MINECART
+        */
     ) {
        return true;
     } else {
