@@ -10,21 +10,22 @@
    
     <repositories>
     <repository>
-      <id>bukkit-repo</id>
-      <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
+        <id>bigpresh</id>
+        <url>file:///home/davidp/dev/mavenrepo</url>
     </repository>
     <repository>
-      <id>vault-repo</id>
-      <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
+<!--
+    skip most of these repos, we'll dump our deps in the local repo above.
+    This is dirty, but waiting for ages as Maven slowly goes poking through
+    every repo in turn asking for artifacts, rather than letting us tell it
+    which repo each artifact lives in, is even dirtier, so let's make do.
       <repository>
-    <id>ess-repo</id>
-    <url>http://repo.ess3.net/content/groups/essentials</url>
+    <id>essentialsx-repo</id>
+    <url> https://ci.ender.zone/plugin/repository/everything</url>
   </repository>
-    <repository>
-    <id>lolmewn-repo</id>
-    <url>http://lolmewn.nl:8081/nexus/content/groups/public</url>
-    </repository> 
     <repository>
       <id>xephi-repo</id>
       <url>http://ci.xephi.fr/plugin/repository/everything/</url>
@@ -33,18 +34,20 @@
       <id>kitteh-repo</id>
       <url>http://repo.kitteh.org/content/groups/public</url>
     </repository>
+-->
   </repositories>
+
+<!--
+     WTF even is a pluginRepository? How is it different to the repository
+    entries above?
+
+-->
 	<pluginRepositories>
     	<pluginRepository>
             <id>kitteh-repo</id>
             <url>http://repo.kitteh.org/content/groups/public</url>
         </pluginRepository>
     </pluginRepositories>
-
-
-
-
-
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,14 +57,7 @@
       <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.9.4-R0.1-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>provided</scope>
-    </dependency>
-      <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.9.4-R0.1-SNAPSHOT</version>
+      <version>1.16.1-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
@@ -71,31 +67,24 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <!--
+        should be able to build without this, we only needed it for chat
+        coloring based on group membership; could instead check for a permission
+        named after the group or something?
+        Can't find a maven repo with EssentialsX-GroupManager.
+        Or, I could even consider migrating us to a newer, more widely supported
+        permissions management system.
       <dependency>
     <groupId>net.ess3</groupId>
-    <artifactId>Essentials</artifactId>
-    <version>2.13-SNAPSHOT</version>
+    <artifactId>EssentialsX</artifactId>
+    <version>2.17.2</version>
   </dependency>
-     <dependency>
-        <groupId>nl.lolmewn.stats</groupId>
-        <artifactId>Stats</artifactId>
-        <version>3.0.2</version>
-        <scope>provided</scope>
-        <type>jar</type>
-    </dependency>
     <dependency>
         <groupId>net.ess3</groupId>
-        <artifactId>EssentialsGroupManager</artifactId>
-        <version>2.13.1</version>
+        <artifactId>EssentialsXGroupManager</artifactId>
+        <version>2.17.2</version>
     </dependency>
-    <dependency>
-        <groupId>com.ensifera</groupId>
-        <artifactId>CraftIRC</artifactId>
-        <version>3.9</version>
-        <type>jar</type>
-        <optional>true</optional>
-        <scope>compile</scope>
-    </dependency>
+    -->
   </dependencies>
   
   <build>
