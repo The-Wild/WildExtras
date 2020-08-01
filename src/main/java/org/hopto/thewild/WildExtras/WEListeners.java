@@ -524,21 +524,22 @@ public class WEListeners implements Listener {
             color = ChatColor.LIGHT_PURPLE;
         } else if (isProtected(player)) {
             color = ChatColor.DARK_RED;
-        } else {
+        }
+
+        // If we didn't pick a colour above to signify PvP protection/newbness
+        // then color based on their group, if they have one; rather than
+        // hook in to permissions plugin to know about groups, I've just given
+        // each group a group.<name> permission node we can check for.
+        // Because of inheritance, check in descending order.
+        if (player.hasPermission("group.admin")) {
+            color = ChatColor.GREEN;
+        } else if (player.hasPermission("group.mod")) {
+            color = ChatColor.GOLD;
+        } else if (player.hasPermission("group.playermod")) {
+            color = ChatColor.GRAY;
+        } else if (player.hasPermission("group.regular")) {
             color = ChatColor.YELLOW;
         }
-        /*
-         * reinstate if I get GroupManager to work as a dep again? or just add a
-         * permission to each group named after it, so you could just say
-         * player.hasPermission('Admin') ? } else if (setupGroupManagerAPI()) { String
-         * group = getPlayerGroup(player); debugmsg( "colorNick() got group " + group +
-         * " for " + player.getName() );
-         * 
-         * if (group.equals("Mod")) { color = ChatColor.GOLD; } else if
-         * (group.equals("PlayerMod")) { color = ChatColor.GRAY; } else if
-         * (group.equals("Admin")) { color = ChatColor.GREEN; } else { color =
-         * ChatColor.YELLOW; }
-         */
 
         if (color != null) {
             player.setPlayerListName(color + player.getName() + ChatColor.RESET);
