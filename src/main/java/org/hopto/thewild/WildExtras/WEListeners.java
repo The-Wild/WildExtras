@@ -531,14 +531,16 @@ public class WEListeners implements Listener {
         // hook in to permissions plugin to know about groups, I've just given
         // each group a group.<name> permission node we can check for.
         // Because of inheritance, check in descending order.
-        if (player.hasPermission("group.admin")) {
-            color = ChatColor.GREEN;
-        } else if (player.hasPermission("group.mod")) {
-            color = ChatColor.GOLD;
-        } else if (player.hasPermission("group.playermod")) {
-            color = ChatColor.GRAY;
-        } else if (player.hasPermission("group.regular")) {
-            color = ChatColor.YELLOW;
+        if (color != null) {
+            if (player.hasPermission("group.admin")) {
+                color = ChatColor.GREEN;
+            } else if (player.hasPermission("group.mod")) {
+                color = ChatColor.GOLD;
+            } else if (player.hasPermission("group.playermod")) {
+                color = ChatColor.GRAY;
+            } else if (player.hasPermission("group.regular")) {
+                color = ChatColor.YELLOW;
+            }
         }
 
         if (color != null) {
