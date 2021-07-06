@@ -659,11 +659,28 @@ public class WEListeners implements Listener {
 
     @EventHandler
     public void checkVehicleDismount(VehicleExitEvent e) {
-        // If this was an auto-minecart, destroy it
+        // If this was an auto-minecart, destroy it - but after relocating
+        // the passenger a bit higher to make sure they don't fall through
+        // a single-high block. 
         Vehicle vehicle = e.getVehicle();
+        
+        // See who exited the vehicle - if it's not a player, we don't care
+        if (!(e.getExited() instanceof Player)) {
+            return;
+        }
+        // Alright, get the player so we can set their location...
+        Player player = (Player) e.getExited();
+
         if (vehicle.hasMetadata("autominecart")) {
+            Location playerLocation = player.getLocation();
             vehicle.remove();
-            debugmsg("Destroyed an auto-minecart");
+            debugmsg("Destroyed an auto-minecart for " + player.getName());
+            playerLocation.setY( playerLocation.getY() + 1);
+            debugmsg(
+                "Set " + player.getName() + " location to "
+                + playerLocation.toString() + " on exiting minecart"
+            );
+            player.teleport(playerLocation);
         }
 
     }
