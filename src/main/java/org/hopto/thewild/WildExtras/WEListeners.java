@@ -509,7 +509,7 @@ public class WEListeners implements Listener {
             }
         }, 50L);
         // Set their nick colour appropriately
-        // colorNick(player);
+        colorNick(player);
     }
 
     /*
