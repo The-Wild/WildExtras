@@ -360,7 +360,18 @@ public final class WildExtras extends JavaPlugin {
             Player player = (sender instanceof Player) ? (Player) sender : null;
             if (player != null) {
                 Location loc = player.getLocation();
-                sender.sendMessage("http://the-wild.tk:8123/?x=" + loc.getBlockX() + "&y=" + loc.getBlockY() + "&z="
+                // Hack - should try using the Dynmap API to work out what port dynmap is listening on.
+                // Can't seem to find a way to fetch the server's name, but the MOTD will do...
+                String dynmapHost = "the-wild.co.uk";
+                String dynmapPort = "8123";
+                if (Bukkit.getServer().getMotd().contains("Scrotelands")) {
+                    dynmapHost = "headshrinker.preshweb.co.uk";
+                    dynmapPort = "8124";
+                }
+
+                // More hackyness - 
+
+                sender.sendMessage("http://" + dynmapHost + ":" + dynmapPort + "/?x=" + loc.getBlockX() + "&y=" + loc.getBlockY() + "&z="
                         + loc.getBlockZ() + "&worldname=" + loc.getWorld().getName() + "&zoom=8");
             }
 
